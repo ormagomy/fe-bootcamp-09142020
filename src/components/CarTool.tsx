@@ -7,13 +7,16 @@ export type CarToolProps = {
 };
 
 export function CarTool(props: CarToolProps) {
-    const [carForm, setcarForm] = useState({
+    const [cars, setCars] = useState([...props.cars]);
+
+    const emptyCarForm = {
         make: '',
         model: '',
         year: '',
         color: '',
         price: '',
-    });
+    };
+    const [carForm, setcarForm] = useState(emptyCarForm);
 
     const updateCarForm = (e: ChangeEvent<HTMLInputElement>) => {
         setcarForm({
@@ -22,7 +25,20 @@ export function CarTool(props: CarToolProps) {
         });
     };
 
-    console.log(carForm);
+    const addCar = () => {
+        setCars(
+            cars.concat({
+                id: Math.max(...cars.map((car) => car.id), 0) + 1,
+                make: carForm.make,
+                model: carForm.model,
+                year: parseInt(carForm.year, 10),
+                color: carForm.color,
+                price: parseInt(carForm.price, 10),
+            })
+        );
+
+        setcarForm(emptyCarForm);
+    };
 
     const attrs = ['Id', 'Make', 'Model', 'Year', 'Color', 'Price'];
 
@@ -40,7 +56,7 @@ export function CarTool(props: CarToolProps) {
                     </tr>
                 </thead>
                 <tbody>
-                    {props.cars.map((car) => (
+                    {cars.map((car) => (
                         <tr key={car.id}>
                             <td>{car.id}</td>
                             <td>{car.make}</td>
@@ -73,7 +89,7 @@ export function CarTool(props: CarToolProps) {
                 <div>
                     <label>
                         Year
-                        <input type="text" value={carForm.year} onChange={updateCarForm} name="year" />
+                        <input type="number" value={carForm.year} onChange={updateCarForm} name="year" />
                     </label>
                 </div>
                 <div>
@@ -85,10 +101,10 @@ export function CarTool(props: CarToolProps) {
                 <div>
                     <label>
                         Price
-                        <input type="text" value={carForm.price} onChange={updateCarForm} name="price" />
+                        <input type="number" value={carForm.price} onChange={updateCarForm} name="price" />
                     </label>
                 </div>
-                <button type="button" onClick={() => {}}>
+                <button type="button" onClick={addCar}>
                     Add Car
                 </button>
             </form>
