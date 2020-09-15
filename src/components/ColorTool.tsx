@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from 'react';
-
+import { ToolHeader } from "./ToolHeader";
 import { Color } from '../models/Colors';
 
 export type ColorToolProps = {
@@ -35,9 +35,7 @@ export function ColorTool(props: ColorToolProps) {
 
     return (
         <>
-            <header>
-                <h1>Color tool</h1>
-            </header>
+            <ToolHeader headerText="Color tool" />
             <ul>
                 {colors.map((color) => (
                     <li key={color.id}>{color.name}</li>
