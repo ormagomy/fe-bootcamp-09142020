@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { ChangeEvent, useState } from 'react';
 
 import { Color } from '../models/Colors';
 
 export type ColorToolProps = {
-    colors: Color[],
+    colors: Color[];
 };
 
 export function ColorTool(props: ColorToolProps) {
-    
+    const [colorForm, setColorForm] = useState({
+        colorName: '',
+        colorHexcode: '',
+    });
+
+    const updateColorForm = (e: ChangeEvent<HTMLInputElement>) => {
+        setColorForm({
+            ...colorForm,
+            [e.target.name]: e.target.value,
+        });
+    };
 
     return (
         <>
@@ -19,6 +29,23 @@ export function ColorTool(props: ColorToolProps) {
                     <li key={color.id}>{color.name}</li>
                 ))}
             </ul>
+            <form>
+                <div>
+                    <label>
+                        Color Name
+                        <input type="text" value={colorForm.colorName} onChange={updateColorForm} name="colorName" />
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        Color Hexcode
+                        <input type="text" value={colorForm.colorHexcode} onChange={updateColorForm} name="colorHexcode" />
+                    </label>
+                </div>
+                <button type="button" onClick={() => {}}>
+                    Add Color
+                </button>
+            </form>
         </>
     );
 }
