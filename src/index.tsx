@@ -1,17 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+
+import { CarTool } from './components/CarTool';
+import { Car } from "./models/Cars";
+import { ColorTool } from './components/ColorTool';
+import { Color } from "./models/Colors";
+
+const colorList: Color[] = [
+  { id: 1, name: 'red', hexcode: 'ff0000' },
+  { id: 2, name: 'green', hexcode: 'ff0000' },
+  { id: 3, name: 'blue', hexcode: 'ff0000' },
+];
+
+const carList: Car[] = [
+  { id: 1, make: 'Toyota', model: 'Tacoma', year: 2017, color: 'gray', price: 19999 },
+  { id: 2, make: 'Tesla', model: 'Cyber Truck', year: 2022, color: 'metallic', price: 69999 },
+];
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <>
+        <ColorTool colors={colorList} />
+        <CarTool cars={carList} />
+    </>,
+    document.querySelector('#root')
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
