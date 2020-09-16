@@ -1,6 +1,14 @@
 import React from 'react';
+import { Table, TableBody, TableHead, TableRow, TableCell, makeStyles } from '@material-ui/core';
+
 import { Car } from '../models/Cars';
 import { CarViewRow } from './CarViewRow';
+
+const useStyles = makeStyles({
+    table: {
+        width: 1000,
+    },
+});
 
 export type CarTableProps = {
     cars: Car[];
@@ -10,20 +18,22 @@ export type CarTableProps = {
 const attrs = ['Id', 'Make', 'Model', 'Year', 'Color', 'Price', 'Actions'];
 
 export function CarTable(props: CarTableProps) {
+    const classes = useStyles();
+
     return (
-        <table>
-            <thead>
-                <tr>
+        <Table className={classes.table} size="small">
+            <TableHead>
+                <TableRow>
                     {attrs.map((attr) => (
-                        <th key={attr}>{attr}</th>
+                        <TableCell key={attr}>{attr}</TableCell>
                     ))}
-                </tr>
-            </thead>
-            <tbody>
+                </TableRow>
+            </TableHead>
+            <TableBody>
                 {props.cars.map((car) => (
                     <CarViewRow car={car} key={car.id} onDeleteCar={props.onDeleteCar} />
                 ))}
-            </tbody>
-        </table>
+            </TableBody>
+        </Table>
     );
 }
