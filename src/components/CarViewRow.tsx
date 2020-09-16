@@ -1,10 +1,18 @@
 import React from 'react';
-import { Button, TableRow, TableCell } from '@material-ui/core';
+import { IconButton, TableRow, TableCell } from '@material-ui/core';
+import { Delete, Edit } from '@material-ui/icons';
 
 import { Car } from '../models/Cars';
 
-export function CarViewRow({ car, onDeleteCar }: { car: Car; onDeleteCar: (id: number) => void }) {
+type CarViewRowProps = {
+    car: Car;
+    onDeleteCar: (id: number) => void;
+    onEditCar: (car: Car) => void;
+};
+
+export function CarViewRow({ car, onDeleteCar, onEditCar }: CarViewRowProps) {
     const deleteCar = () => onDeleteCar(car.id);
+    const editCar = () => onEditCar(car);
 
     return (
         <TableRow>
@@ -20,9 +28,12 @@ export function CarViewRow({ car, onDeleteCar }: { car: Car; onDeleteCar: (id: n
                 }).format(car.price)}
             </TableCell>
             <TableCell>
-                <Button onClick={deleteCar} color="primary" variant="contained">
-                    Delete
-                </Button>
+                <IconButton onClick={editCar}>
+                    <Edit />
+                </IconButton>
+                <IconButton onClick={deleteCar} color="secondary">
+                    <Delete />
+                </IconButton>
             </TableCell>
         </TableRow>
     );

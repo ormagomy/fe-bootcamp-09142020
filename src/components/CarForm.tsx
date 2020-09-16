@@ -22,7 +22,7 @@ export type CarFormProps = {
     onSubmitCar: (carFormData: CarFormData) => void;
 };
 
-export function CarForm(props: CarFormProps) {
+export function CarForm({ buttonText, onSubmitCar }: CarFormProps) {
     const emptyCarForm = {
         make: '',
         model: '',
@@ -40,20 +40,20 @@ export function CarForm(props: CarFormProps) {
     };
 
     const submitCar = () => {
-        props.onSubmitCar({ ...carForm });
+        onSubmitCar({ ...carForm });
         setCarForm(emptyCarForm);
     };
 
     return (
         <Grid container spacing={2}>
             {cells.map((cell) => (
-                <Grid item xs={12}>
+                <Grid item xs={12} key={cell.id}>
                     <TextField label={cell.label} onChange={updateCarForm} name={cell.id} value={carForm[cell.id as 'make' | 'model' | 'year' | 'color' | 'price']} />
                 </Grid>
             ))}
             <Grid item xs={12}>
                 <Button color="primary" variant="contained" onClick={submitCar}>
-                    {props.buttonText}
+                    {buttonText}
                 </Button>
             </Grid>
         </Grid>

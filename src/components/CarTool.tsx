@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import {makeStyles} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 
 import { Car } from '../models/Cars';
 import { CarForm, CarFormData } from './CarForm';
 import { CarTable } from './CarTable';
 import { ToolHeader } from './ToolHeader';
+import { Color } from '../models/Colors';
 
 export type CarToolProps = {
     cars: Car[];
+    colors: Color[];
 };
 
 const useStyles = makeStyles({
@@ -18,9 +20,9 @@ const useStyles = makeStyles({
     },
 });
 
-export function CarTool(props: CarToolProps) {
+export function CarTool({cars: defaultCars, colors}: CarToolProps) {
     const classes = useStyles();
-    const [cars, setCars] = useState([...props.cars]);
+    const [cars, setCars] = useState([...defaultCars]);
 
     const addCar = (carForm: CarFormData) => {
         setCars(
@@ -38,7 +40,7 @@ export function CarTool(props: CarToolProps) {
     return (
         <div className={classes.root}>
             <ToolHeader headerText="Car tool" />
-            <CarTable cars={cars} onDeleteCar={deleteCar} />
+            <CarTable cars={cars} colors={colors} onDeleteCar={deleteCar} />
             <CarForm buttonText="Add Car" onSubmitCar={addCar} />
         </div>
     );

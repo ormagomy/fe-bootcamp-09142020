@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
@@ -6,6 +6,7 @@ import { ColorForm, ColorFormData } from './ColorForm';
 
 export type ColorToolProps = {
     colors: Color[];
+    onAddColor: (color: Color) => void;
 };
 
 const useStyles = makeStyles({
@@ -16,17 +17,14 @@ const useStyles = makeStyles({
     },
 });
 
-export function ColorTool(props: ColorToolProps) {
-    const [colors, setColors] = useState([...props.colors]);
+export function ColorTool({ colors, onAddColor }: ColorToolProps) {
     const classes = useStyles();
 
     const addColor = (colorForm: ColorFormData) => {
-        setColors(
-            colors.concat({
-                id: Math.max(...colors.map((c) => c.id), 0) + 1,
-                ...colorForm,
-            })
-        );
+        onAddColor({
+            id: Math.max(...colors.map((c) => c.id), 0) + 1,
+            ...colorForm,
+        });
     };
 
     return (

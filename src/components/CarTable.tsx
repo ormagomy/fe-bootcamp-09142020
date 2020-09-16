@@ -3,6 +3,8 @@ import { Table, TableBody, TableHead, TableRow, TableCell, TableSortLabel, makeS
 
 import { Car } from '../models/Cars';
 import { CarViewRow } from './CarViewRow';
+import { CarEditRow } from './CarEditRow';
+import {Color} from '../models/Colors';
 
 const useStyles = makeStyles({
     table: {
@@ -12,6 +14,7 @@ const useStyles = makeStyles({
 
 export type CarTableProps = {
     cars: Car[];
+    colors: Color[];
     onDeleteCar: (id: number) => void;
 };
 
@@ -53,11 +56,12 @@ function stableSort(cars: Car[], comparator: (a: Car, b: Car) => number) {
     return stabilizedThis.map((el) => el.car);
 }
 
-export function CarTable(props: CarTableProps) {
+export function CarTable({cars, colors, onDeleteCar}: CarTableProps) {
     const classes = useStyles();
 
     const [orderBy, setOrderBy] = useState(headCells[0].id);
     const [order, setOrder] = useState<orderType>('asc');
+    const [carToEdit, setCarToEdit] = useState<Car | null>(null);
 
     const handleSort = (id: string) => {
         if (id === 'actions') {
@@ -66,6 +70,10 @@ export function CarTable(props: CarTableProps) {
         const isAsc = orderBy === id && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(id);
+    };
+
+    const handleEditCar = (car: Car) => {
+        setCarToEdit(car);
     };
 
     return (
@@ -86,9 +94,13 @@ export function CarTable(props: CarTableProps) {
                 </TableRow>
             </TableHead>
             <TableBody>
-                {stableSort(props.cars, getComparator(order, orderBy)).map((car) => (
-                    <CarViewRow car={car} key={car.id} onDeleteCar={props.onDeleteCar} />
-                ))}
+                {stableSort(cars, getComparator(order, orderBy)).map((car) =>
+                    carToEdit === car ? (
+                        <CarEditRow car={car} key={car.id} onCancel={() => setCarToEdit(null)} colors={colors} />
+                    ) : (
+                        <CarViewRow car={car} key={car.id} onEditCar={handleEditCar} onDeleteCar={onDeleteCar} />
+                    )
+                )}
             </TableBody>
         </Table>
     );
