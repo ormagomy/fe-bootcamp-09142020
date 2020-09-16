@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { Table, TableBody, TableHead, TableRow, TableCell, TableSortLabel, makeStyles } from '@material-ui/core';
 
 import { Car } from '../models/Cars';

@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useState } from 'react';
+import { Grid, TextField, Button, makeStyles } from '@material-ui/core';
 
 export type ColorFormData = {
     name: string;
@@ -10,7 +11,12 @@ export type ColorFormProps = {
     onSubmitColor: (colorFormData: ColorFormData) => void;
 };
 
+const useStyles = makeStyles({
+    addButton: {},
+});
+
 export function ColorForm(props: ColorFormProps) {
+    const classes = useStyles();
     const emptyColorForm = {
         name: '',
         hexcode: '',
@@ -30,23 +36,19 @@ export function ColorForm(props: ColorFormProps) {
     };
 
     return (
-        <form>
-            <div>
-                <label>
-                    Color Name
-                    <input type="text" value={colorForm.name} onChange={updateColorForm} name="name" />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Color Hexcode
-                    <input type="text" value={colorForm.hexcode} onChange={updateColorForm} name="hexcode" />
-                </label>
-            </div>
-            <button type="button" onClick={submitColor}>
-                {props.buttonText}
-            </button>
-        </form>
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <TextField label="Color Name" onChange={updateColorForm} name="name" value={colorForm.name} />
+            </Grid>
+            <Grid item xs={12}>
+                <TextField label="Color Hexcode" onChange={updateColorForm} name="hexcode" value={colorForm.hexcode} />
+            </Grid>
+            <Grid item xs={12}>
+                <Button className={classes.addButton} color="default" onClick={submitColor}>
+                    {props.buttonText}
+                </Button>
+            </Grid>
+        </Grid>
     );
 }
 

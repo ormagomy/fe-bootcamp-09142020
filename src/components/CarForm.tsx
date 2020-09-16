@@ -1,4 +1,13 @@
 import React, { ChangeEvent, useState } from 'react';
+import { Grid, TextField, Button } from '@material-ui/core';
+
+const cells = [
+    { id: 'make', label: 'Make' },
+    { id: 'model', label: 'Model' },
+    { id: 'year', label: 'Year' },
+    { id: 'color', label: 'Color' },
+    { id: 'price', label: 'Price' },
+];
 
 export type CarFormData = {
     make: string;
@@ -36,41 +45,18 @@ export function CarForm(props: CarFormProps) {
     };
 
     return (
-        <form>
-            <div>
-                <label>
-                    Make
-                    <input type="text" value={carForm.make} onChange={updateCarForm} name="make" />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Model
-                    <input type="text" value={carForm.model} onChange={updateCarForm} name="model" />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Year
-                    <input type="number" value={carForm.year} onChange={updateCarForm} name="year" />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Color
-                    <input type="text" value={carForm.color} onChange={updateCarForm} name="color" />
-                </label>
-            </div>
-            <div>
-                <label>
-                    Price
-                    <input type="number" value={carForm.price} onChange={updateCarForm} name="price" />
-                </label>
-            </div>
-            <button type="button" onClick={submitCar}>
-                {props.buttonText}
-            </button>
-        </form>
+        <Grid container spacing={2}>
+            {cells.map((cell) => (
+                <Grid item xs={12}>
+                    <TextField label={cell.label} onChange={updateCarForm} name={cell.id} value={carForm[cell.id as 'make' | 'model' | 'year' | 'color' | 'price']} />
+                </Grid>
+            ))}
+            <Grid item xs={12}>
+                <Button color="primary" variant="contained" onClick={submitCar}>
+                    {props.buttonText}
+                </Button>
+            </Grid>
+        </Grid>
     );
 }
 
