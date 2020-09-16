@@ -25,7 +25,7 @@ export function ColorForm(props: ColorFormProps) {
     };
 
     const submitColor = () => {
-        props.onSubmitColor({...colorForm});
+        props.onSubmitColor({ ...colorForm });
         setColorForm(emptyColorForm);
     };
 

@@ -1,11 +1,13 @@
 import React from 'react';
-import {Car} from '../models/Cars';
+import { Car } from '../models/Cars';
+import { CarViewRow } from './CarViewRow';
 
 export type CarTableProps = {
-    cars: Car[],
+    cars: Car[];
+    onDeleteCar: (id: number) => void;
 };
 
-const attrs = ['Id', 'Make', 'Model', 'Year', 'Color', 'Price'];
+const attrs = ['Id', 'Make', 'Model', 'Year', 'Color', 'Price', 'Actions'];
 
 export function CarTable(props: CarTableProps) {
     return (
@@ -19,19 +21,7 @@ export function CarTable(props: CarTableProps) {
             </thead>
             <tbody>
                 {props.cars.map((car) => (
-                    <tr key={car.id}>
-                        <td>{car.id}</td>
-                        <td>{car.make}</td>
-                        <td>{car.model}</td>
-                        <td>{car.year}</td>
-                        <td>{car.color}</td>
-                        <td>
-                            {Intl.NumberFormat('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                            }).format(car.price)}
-                        </td>
-                    </tr>
+                    <CarViewRow car={car} key={car.id} onDeleteCar={props.onDeleteCar} />
                 ))}
             </tbody>
         </table>
