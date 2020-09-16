@@ -1,7 +1,7 @@
 import React from 'react';
 
 export type ToolHeaderProps = {
-    headerText: string;
+    headerText: string,
 };
 
 export function ToolHeader(props: ToolHeaderProps) {

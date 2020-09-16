@@ -2,7 +2,7 @@ import React from 'react';
 import {Car} from '../models/Cars';
 
 export type CarTableProps = {
-    cars: Car[];
+    cars: Car[],
 };
 
 const attrs = ['Id', 'Make', 'Model', 'Year', 'Color', 'Price'];

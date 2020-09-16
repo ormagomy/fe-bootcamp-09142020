@@ -5,7 +5,7 @@ import { CarTable } from './CarTable';
 import { ToolHeader } from './ToolHeader';
 
 export type CarToolProps = {
-    cars: Car[];
+    cars: Car[],
 };
 
 export function CarTool(props: CarToolProps) {
