@@ -14,9 +14,9 @@ export function CarTool(props: CarToolProps) {
     const emptyCarForm = {
         make: '',
         model: '',
-        year: '',
+        year: 2000,
         color: '',
-        price: '',
+        price: 0,
     };
     const [carForm, setcarForm] = useState(emptyCarForm);
 
@@ -31,11 +31,7 @@ export function CarTool(props: CarToolProps) {
         setCars(
             cars.concat({
                 id: Math.max(...cars.map((car) => car.id), 0) + 1,
-                make: carForm.make,
-                model: carForm.model,
-                year: parseInt(carForm.year, 10),
-                color: carForm.color,
-                price: parseInt(carForm.price, 10),
+                ...carForm,
             })
         );
 

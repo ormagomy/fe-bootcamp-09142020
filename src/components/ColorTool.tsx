@@ -10,8 +10,8 @@ export function ColorTool(props: ColorToolProps) {
     const [colors, setColors] = useState([...props.colors]);
 
     const [colorForm, setColorForm] = useState({
-        colorName: '',
-        colorHexcode: '',
+        name: '',
+        hexcode: '',
     });
 
     const updateColorForm = (e: ChangeEvent<HTMLInputElement>) => {
@@ -25,12 +25,11 @@ export function ColorTool(props: ColorToolProps) {
         setColors(
             colors.concat({
                 id: Math.max(...colors.map((c) => c.id), 0) + 1,
-                name: colorForm.colorName,
-                hexcode: colorForm.colorHexcode,
+                ...colorForm,
             })
         );
 
-        setColorForm({ colorName: '', colorHexcode: '' });
+        setColorForm({ name: '', hexcode: '' });
     };
 
     return (
@@ -45,13 +44,13 @@ export function ColorTool(props: ColorToolProps) {
                 <div>
                     <label>
                         Color Name
-                        <input type="text" value={colorForm.colorName} onChange={updateColorForm} name="colorName" />
+                        <input type="text" value={colorForm.name} onChange={updateColorForm} name="name" />
                     </label>
                 </div>
                 <div>
                     <label>
                         Color Hexcode
-                        <input type="text" value={colorForm.colorHexcode} onChange={updateColorForm} name="colorHexcode" />
+                        <input type="text" value={colorForm.hexcode} onChange={updateColorForm} name="hexcode" />
                     </label>
                 </div>
                 <button type="button" onClick={addColor}>
