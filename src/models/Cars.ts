@@ -6,3 +6,11 @@ export type Car = {
     color: string,
     price: number,
 };
+
+export type CarFormData = {
+    make: string;
+    model: string;
+    year: number;
+    color: string;
+    price: number;
+};

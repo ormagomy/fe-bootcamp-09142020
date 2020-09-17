@@ -2,15 +2,8 @@ import React from 'react';
 import { Grid, TextField, Button, Select, MenuItem, FormControl, InputLabel, makeStyles, createStyles, Theme } from '@material-ui/core';
 import { Color } from '../models/Colors';
 import { nanToString, nanToZero } from '../utils';
-import {useForm} from '../hooks/useForm';
-
-export type CarFormData = {
-    make: string;
-    model: string;
-    year: number;
-    color: string;
-    price: number;
-};
+import { useForm } from '../hooks/useForm';
+import { CarFormData } from '../models/Cars';
 
 export type CarFormProps = {
     buttonText?: string;
@@ -39,15 +32,15 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
         color: '',
         price: 0,
     };
-    const [carForm, updateCarForm, updateColor , resetCarForm] = useForm<CarFormData>(emptyCarForm);
+    const [carForm, updateCarForm, updateColor, resetCarForm] = useForm<CarFormData>(emptyCarForm);
 
     const addCar = () => {
-        onAddCar({ 
-            ...carForm, 
+        onAddCar({
+            ...carForm,
             year: nanToZero(carForm.year),
             price: nanToZero(carForm.price),
-         });
-         resetCarForm();
+        });
+        resetCarForm();
     };
 
     return (
