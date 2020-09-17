@@ -4,6 +4,7 @@ import { Save, Cancel } from '@material-ui/icons';
 
 import { Car } from '../models/Cars';
 import { Color } from '../models/Colors';
+import {nanToString, nanToZero} from '../utils';
 
 type CarEditRowProps = {
     car: Car;
@@ -16,12 +17,11 @@ export function CarEditRow({ car, colors, onCancel, onSave }: CarEditRowProps) {
     const [carForm, setCarForm] = useState(car);
 
     const cancel = () => onCancel();
-    const save = () => onSave(carForm);
 
     const updateCarForm = (e: ChangeEvent<HTMLInputElement>) => {
         setCarForm({
             ...carForm,
-            [e.target.name]: e.target.value,
+            [e.target.name as string]: e.target.type === 'number' ? e.target.valueAsNumber : e.target.value,
         });
     };
 
@@ -30,6 +30,14 @@ export function CarEditRow({ car, colors, onCancel, onSave }: CarEditRowProps) {
             ...carForm,
             color: event.target.value as string,
         });
+    };
+
+    const save = () => {
+        onSave({ 
+            ...carForm, 
+            year: nanToZero(carForm.year),
+            price: nanToZero(carForm.price),
+         });
     };
 
     return (
@@ -43,7 +51,7 @@ export function CarEditRow({ car, colors, onCancel, onSave }: CarEditRowProps) {
                 <TextField name="model" value={carForm.model} onChange={updateCarForm} />
             </TableCell>
             <TableCell>
-                <TextField name="year" value={carForm.year} onChange={updateCarForm} />
+                <TextField name="year" type="number" value={nanToString(carForm.year)} onChange={updateCarForm} />
             </TableCell>
             <TableCell>
                 <Select name="color" value={carForm.color} onChange={updateColorValue}>
@@ -55,7 +63,7 @@ export function CarEditRow({ car, colors, onCancel, onSave }: CarEditRowProps) {
                 </Select>
             </TableCell>
             <TableCell>
-                <TextField name="price" value={carForm.price} onChange={updateCarForm} />
+                <TextField name="price" type="number" value={nanToString(carForm.price)} onChange={updateCarForm} />
             </TableCell>
 
             <TableCell>

@@ -1,6 +1,7 @@
 import React, { ChangeEvent, useState } from 'react';
 import { Grid, TextField, Button, Select, MenuItem, FormControl, InputLabel, makeStyles, createStyles, Theme } from '@material-ui/core';
 import { Color } from '../models/Colors';
+import { nanToString, nanToZero } from '../utils';
 
 export type CarFormData = {
     make: string;
@@ -39,15 +40,26 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
     };
     const [carForm, setCarForm] = useState(emptyCarForm);
 
-    const updateCarForm = (e: ChangeEvent<HTMLInputElement | { name?: string | undefined; value: unknown }>) => {
+    const updateCarForm = (e: ChangeEvent<HTMLInputElement>) => {
+        setCarForm({
+            ...carForm,
+            [e.target.name as string]: e.target.type === 'number' ? e.target.valueAsNumber : e.target.value,
+        });
+    };
+
+    const updateColor = (e: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         setCarForm({
             ...carForm,
             [e.target.name as string]: e.target.value,
         });
     };
 
-    const submitCar = () => {
-        onAddCar({ ...carForm });
+    const addCar = () => {
+        onAddCar({ 
+            ...carForm, 
+            year: nanToZero(carForm.year),
+            price: nanToZero(carForm.price),
+         });
         setCarForm(emptyCarForm);
     };
 
@@ -60,12 +72,12 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
                 <TextField name="model" label="Model" value={carForm.model} onChange={updateCarForm} />
             </Grid>
             <Grid item>
-                <TextField name="year" label="Year" value={carForm.year} onChange={updateCarForm} />
+                <TextField name="year" label="Year" type="number" value={nanToString(carForm.year)} onChange={updateCarForm} />
             </Grid>
             <Grid item>
                 <FormControl className={classes.formControl}>
                     <InputLabel id="color-label">Color</InputLabel>
-                    <Select name="color" labelId="color-label" value={carForm.color} onChange={updateCarForm}>
+                    <Select name="color" labelId="color-label" value={carForm.color} onChange={updateColor}>
                         {colors.map((color) => (
                             <MenuItem key={color.id} value={color.name}>
                                 {color.name}
@@ -75,10 +87,10 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
                 </FormControl>
             </Grid>
             <Grid item>
-                <TextField name="price" label="Price" value={carForm.price} onChange={updateCarForm} />
+                <TextField name="price" label="Price" type="number" value={nanToString(carForm.price)} onChange={updateCarForm} />
             </Grid>
             <Grid item xs={12}>
-                <Button color="default" variant="contained" onClick={submitCar}>
+                <Button color="default" variant="contained" onClick={addCar}>
                     {buttonText}
                 </Button>
             </Grid>
@@ -87,5 +99,5 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
 }
 
 CarForm.defaultProps = {
-    buttonText: 'Submit Color',
+    buttonText: 'Submit Car',
 };
