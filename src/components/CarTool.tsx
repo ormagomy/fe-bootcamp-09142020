@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
 import { Car } from '../models/Cars';
-import { CarForm, CarFormData } from './CarForm';
+import { CarForm } from './CarForm';
 import { CarTable } from './CarTable';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
+import { useCarList } from '../hooks/useCarList';
 
 export type CarToolProps = {
     cars: Car[];
@@ -22,38 +23,12 @@ const useStyles = makeStyles({
 
 export function CarTool({ cars: defaultCars, colors }: CarToolProps) {
     const classes = useStyles();
-    const [cars, setCars] = useState([...defaultCars]);
-    const [carToEdit, setCarToEdit] = useState<Car>();
-
-    const addCar = (carForm: CarFormData) => {
-        setCars(
-            cars.concat({
-                id: Math.max(...cars.map((car) => car.id), 0) + 1,
-                ...carForm,
-            })
-        );
-        cancelEdit();
-    };
-
-    const saveCarEdit = (carToSave: Car) => {
-        const index = cars.findIndex((car) => carToSave.id === car.id);
-        const carsUpdate = cars.concat(); // Clone the cars array
-        carsUpdate.splice(index, 1, carToSave);
-        setCars(carsUpdate);
-        cancelEdit();
-    };
-
-    const cancelEdit = () => setCarToEdit(undefined);
-
-    const deleteCar = (carId: number) => {
-        setCars(cars.filter((car) => car.id !== carId));
-        cancelEdit();
-    };
+    const [cars, carToEdit, addCar, setCarToEdit, saveCarEdit, cancelEdit, deleteCar] = useCarList(defaultCars);
 
     return (
         <div className={classes.root}>
             <ToolHeader headerText="Car tool" />
-            <CarTable cars={cars} carToEdit={carToEdit} colors={colors} onEditCar={(car) => setCarToEdit(car)} onSaveEdit={saveCarEdit} onCancelEdit={cancelEdit} onDeleteCar={deleteCar} />
+            <CarTable cars={cars} carToEdit={carToEdit} colors={colors} onEditCar={setCarToEdit} onSaveEdit={saveCarEdit} onCancelEdit={cancelEdit} onDeleteCar={deleteCar} />
             <CarForm buttonText="Add Car" colors={colors} onAddCar={addCar} />
         </div>
     );
