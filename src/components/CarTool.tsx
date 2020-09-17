@@ -6,7 +6,7 @@ import { CarForm } from './CarForm';
 import { CarTable } from './CarTable';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
-import { useCarList } from '../hooks/useCarList';
+import { useList } from '../hooks/useList';
 
 export type CarToolProps = {
     cars: Car[];
@@ -23,11 +23,11 @@ const useStyles = makeStyles({
 
 export function CarTool({ cars: defaultCars, colors }: CarToolProps) {
     const classes = useStyles();
-    const [cars, addCar, replaceCar, deleteCar] = useCarList(defaultCars);
+    const [cars, addCar, replaceCar, deleteCar] = useList(defaultCars);
     const [carToEdit, setCarToEdit] = useState<Car>();
 
     const onAddCar = (carForm: CarFormData) => {
-        addCar(carForm);
+        addCar(carForm as Car);
         cancelEdit();
     };
 

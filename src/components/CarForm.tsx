@@ -26,6 +26,7 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
     const classes = useStyles();
 
     const emptyCarForm = {
+        id: 0,
         make: '',
         model: '',
         year: 2000,
