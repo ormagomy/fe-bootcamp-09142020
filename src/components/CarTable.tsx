@@ -4,7 +4,7 @@ import { Table, TableBody, TableHead, TableRow, TableCell, TableSortLabel, makeS
 import { Car } from '../models/Cars';
 import { CarViewRow } from './CarViewRow';
 import { CarEditRow } from './CarEditRow';
-import {Color} from '../models/Colors';
+import { Color } from '../models/Colors';
 
 const useStyles = makeStyles({
     table: {
@@ -14,8 +14,12 @@ const useStyles = makeStyles({
 
 export type CarTableProps = {
     cars: Car[];
+    carToEdit?: Car;
     colors: Color[];
     onDeleteCar: (id: number) => void;
+    onEditCar: (car: Car) => void;
+    onSaveEdit: (car: Car) => void;
+    onCancelEdit: () => void;
 };
 
 type orderType = 'asc' | 'desc' | undefined;
@@ -56,12 +60,11 @@ function stableSort(cars: Car[], comparator: (a: Car, b: Car) => number) {
     return stabilizedThis.map((el) => el.car);
 }
 
-export function CarTable({cars, colors, onDeleteCar}: CarTableProps) {
+export function CarTable({ cars, carToEdit, colors, onDeleteCar, onEditCar, onSaveEdit, onCancelEdit }: CarTableProps) {
     const classes = useStyles();
 
     const [orderBy, setOrderBy] = useState(headCells[0].id);
     const [order, setOrder] = useState<orderType>('asc');
-    const [carToEdit, setCarToEdit] = useState<Car | null>(null);
 
     const handleSort = (id: string) => {
         if (id === 'actions') {
@@ -70,10 +73,6 @@ export function CarTable({cars, colors, onDeleteCar}: CarTableProps) {
         const isAsc = orderBy === id && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(id);
-    };
-
-    const handleEditCar = (car: Car) => {
-        setCarToEdit(car);
     };
 
     return (
@@ -96,9 +95,9 @@ export function CarTable({cars, colors, onDeleteCar}: CarTableProps) {
             <TableBody>
                 {stableSort(cars, getComparator(order, orderBy)).map((car) =>
                     carToEdit === car ? (
-                        <CarEditRow car={car} key={car.id} onCancel={() => setCarToEdit(null)} colors={colors} />
+                        <CarEditRow car={car} key={car.id} colors={colors} onSave={onSaveEdit} onCancel={onCancelEdit} />
                     ) : (
-                        <CarViewRow car={car} key={car.id} onEditCar={handleEditCar} onDeleteCar={onDeleteCar} />
+                        <CarViewRow car={car} key={car.id} onEditCar={onEditCar} onDeleteCar={onDeleteCar} />
                     )
                 )}
             </TableBody>

@@ -9,11 +9,14 @@ type CarEditRowProps = {
     car: Car;
     colors: Color[];
     onCancel: () => void;
+    onSave: (car: Car) => void;
 };
 
-export function CarEditRow({ car, onCancel, colors }: CarEditRowProps) {
-    const cancel = () => onCancel();
+export function CarEditRow({ car, colors, onCancel, onSave }: CarEditRowProps) {
     const [carForm, setCarForm] = useState(car);
+
+    const cancel = () => onCancel();
+    const save = () => onSave(carForm);
 
     const updateCarForm = (e: ChangeEvent<HTMLInputElement>) => {
         setCarForm({
@@ -56,7 +59,7 @@ export function CarEditRow({ car, onCancel, colors }: CarEditRowProps) {
             </TableCell>
 
             <TableCell>
-                <IconButton onClick={() => {}}>
+                <IconButton onClick={save}>
                     <Save />
                 </IconButton>
                 <IconButton onClick={cancel}>
