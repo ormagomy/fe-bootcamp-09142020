@@ -18,8 +18,11 @@ export type CarFormProps = {
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
+        gridContainer: {
+            marginTop: 30,
+        },
         formControl: {
-            minWidth: 120,
+            width: 166,
         },
     })
 );
@@ -36,17 +39,10 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
     };
     const [carForm, setCarForm] = useState(emptyCarForm);
 
-    const updateCarForm = (e: ChangeEvent<HTMLInputElement>) => {
+    const updateCarForm = (e: ChangeEvent<HTMLInputElement | { name?: string | undefined; value: unknown }>) => {
         setCarForm({
             ...carForm,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    const updateColorValue = (event: React.ChangeEvent<{ value: unknown }>) => {
-        setCarForm({
-            ...carForm,
-            color: event.target.value as string,
+            [e.target.name as string]: e.target.value,
         });
     };
 
@@ -56,20 +52,20 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
     };
 
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12}>
+        <Grid container spacing={2} className={classes.gridContainer}>
+            <Grid item>
                 <TextField name="make" label="Make" value={carForm.make} onChange={updateCarForm} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item>
                 <TextField name="model" label="Model" value={carForm.model} onChange={updateCarForm} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item>
                 <TextField name="year" label="Year" value={carForm.year} onChange={updateCarForm} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item>
                 <FormControl className={classes.formControl}>
                     <InputLabel id="color-label">Color</InputLabel>
-                    <Select name="color" labelId="color-label" value={carForm.color} onChange={updateColorValue}>
+                    <Select name="color" labelId="color-label" value={carForm.color} onChange={updateCarForm}>
                         {colors.map((color) => (
                             <MenuItem key={color.id} value={color.name}>
                                 {color.name}
@@ -78,11 +74,11 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
                     </Select>
                 </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item>
                 <TextField name="price" label="Price" value={carForm.price} onChange={updateCarForm} />
             </Grid>
             <Grid item xs={12}>
-                <Button color="primary" variant="contained" onClick={submitCar}>
+                <Button color="default" variant="contained" onClick={submitCar}>
                     {buttonText}
                 </Button>
             </Grid>

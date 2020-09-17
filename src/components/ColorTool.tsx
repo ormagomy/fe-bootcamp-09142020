@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, List, ListItem } from '@material-ui/core';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
 import { ColorForm, ColorFormData } from './ColorForm';
@@ -30,11 +30,11 @@ export function ColorTool({ colors, onAddColor }: ColorToolProps) {
     return (
         <div className={classes.root}>
             <ToolHeader headerText="Color tool" />
-            <ul>
+            <List>
                 {colors.map((color) => (
-                    <li key={color.id}>{color.name}</li>
+                    <ListItem key={color.id}>{color.name}</ListItem>
                 ))}
-            </ul>
+            </List>
             <ColorForm buttonText="Add Color" onSubmitColor={addColor} />
         </div>
     );

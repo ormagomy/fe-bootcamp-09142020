@@ -37,14 +37,14 @@ export function ColorForm(props: ColorFormProps) {
 
     return (
         <Grid container spacing={2}>
-            <Grid item xs={12}>
+            <Grid item>
                 <TextField label="Color Name" onChange={updateColorForm} name="name" value={colorForm.name} />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item>
                 <TextField label="Color Hexcode" onChange={updateColorForm} name="hexcode" value={colorForm.hexcode} />
             </Grid>
             <Grid item xs={12}>
-                <Button className={classes.addButton} color="default" onClick={submitColor}>
+                <Button className={classes.addButton} color="default" variant="contained" onClick={submitColor}>
                     {props.buttonText}
                 </Button>
             </Grid>

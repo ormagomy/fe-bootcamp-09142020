@@ -8,7 +8,7 @@ import { Color } from '../models/Colors';
 
 const useStyles = makeStyles({
     table: {
-        width: 1000,
+        width: '100%',
     },
 });
 
@@ -25,16 +25,16 @@ export type CarTableProps = {
 type orderType = 'asc' | 'desc' | undefined;
 
 const headCells = [
-    { id: 'id', label: 'Id' },
-    { id: 'make', label: 'Make' },
-    { id: 'model', label: 'Model' },
-    { id: 'year', label: 'Year' },
-    { id: 'color', label: 'Color' },
-    { id: 'price', label: 'Price' },
-    { id: 'actions', label: 'Actions' },
+    { id: 'id' as keyof Car, label: 'Id' },
+    { id: 'make' as keyof Car, label: 'Make' },
+    { id: 'model' as keyof Car, label: 'Model' },
+    { id: 'year' as keyof Car, label: 'Year' },
+    { id: 'color' as keyof Car, label: 'Color' },
+    { id: 'price' as keyof Car, label: 'Price' },
 ];
 
-function descendingComparator(a: any, b: any, orderBy: string) {
+
+function descendingComparator(a: Car, b: Car, orderBy: keyof Car) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
     }
@@ -44,8 +44,8 @@ function descendingComparator(a: any, b: any, orderBy: string) {
     return 0;
 }
 
-function getComparator(order: orderType, orderBy: string) {
-    return order === 'desc' ? (a: any, b: any) => descendingComparator(a, b, orderBy) : (a: any, b: any) => -descendingComparator(a, b, orderBy);
+function getComparator(order: orderType, orderBy: keyof Car) {
+    return order === 'desc' ? (a: Car, b: Car) => descendingComparator(a, b, orderBy) : (a: Car, b: Car) => -descendingComparator(a, b, orderBy);
 }
 
 function stableSort(cars: Car[], comparator: (a: Car, b: Car) => number) {
@@ -63,33 +63,27 @@ function stableSort(cars: Car[], comparator: (a: Car, b: Car) => number) {
 export function CarTable({ cars, carToEdit, colors, onDeleteCar, onEditCar, onSaveEdit, onCancelEdit }: CarTableProps) {
     const classes = useStyles();
 
-    const [orderBy, setOrderBy] = useState(headCells[0].id);
+    const [orderBy, setOrderBy] = useState(headCells[0].id as keyof Car);
     const [order, setOrder] = useState<orderType>('asc');
 
-    const handleSort = (id: string) => {
-        if (id === 'actions') {
-            return;
-        }
-        const isAsc = orderBy === id && order === 'asc';
+    const handleSort = (carKey: keyof Car) => {
+        const isAsc = orderBy === carKey && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(id);
+        setOrderBy(carKey);
     };
 
     return (
         <Table className={classes.table} size="small">
             <TableHead>
                 <TableRow>
-                    {headCells.map((headCell) =>
-                        headCell.id !== 'actions' ? (
-                            <TableCell key={headCell.id}>
-                                <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={() => handleSort(headCell.id)}>
-                                    {headCell.label}
-                                </TableSortLabel>
-                            </TableCell>
-                        ) : (
-                            <TableCell key={headCell.id}>{headCell.label}</TableCell>
-                        )
-                    )}
+                    {headCells.map((headCell) => (
+                        <TableCell key={headCell.id}>
+                            <TableSortLabel active={orderBy === headCell.id} direction={orderBy === headCell.id ? order : 'asc'} onClick={() => handleSort(headCell.id)}>
+                                {headCell.label}
+                            </TableSortLabel>
+                        </TableCell>
+                    ))}
+                    <TableCell>Actions</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
