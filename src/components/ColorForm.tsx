@@ -1,5 +1,6 @@
-import React, { ChangeEvent, useState } from 'react';
+import React from 'react';
 import { Grid, TextField, Button, makeStyles } from '@material-ui/core';
+import { useForm } from '../hooks/useForm';
 
 export type ColorFormData = {
     name: string;
@@ -17,22 +18,17 @@ const useStyles = makeStyles({
 
 export function ColorForm(props: ColorFormProps) {
     const classes = useStyles();
+
     const emptyColorForm = {
         name: '',
         hexcode: '',
     };
-    const [colorForm, setColorForm] = useState(emptyColorForm);
 
-    const updateColorForm = (e: ChangeEvent<HTMLInputElement>) => {
-        setColorForm({
-            ...colorForm,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const [colorForm, updateColorForm, , resetColorForm] = useForm<ColorFormData>(emptyColorForm);
 
     const submitColor = () => {
         props.onSubmitColor({ ...colorForm });
-        setColorForm(emptyColorForm);
+        resetColorForm();
     };
 
     return (

@@ -1,7 +1,8 @@
-import React, { ChangeEvent, useState } from 'react';
+import React from 'react';
 import { Grid, TextField, Button, Select, MenuItem, FormControl, InputLabel, makeStyles, createStyles, Theme } from '@material-ui/core';
 import { Color } from '../models/Colors';
 import { nanToString, nanToZero } from '../utils';
+import {useForm} from '../hooks/useForm';
 
 export type CarFormData = {
     make: string;
@@ -38,21 +39,7 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
         color: '',
         price: 0,
     };
-    const [carForm, setCarForm] = useState(emptyCarForm);
-
-    const updateCarForm = (e: ChangeEvent<HTMLInputElement>) => {
-        setCarForm({
-            ...carForm,
-            [e.target.name as string]: e.target.type === 'number' ? e.target.valueAsNumber : e.target.value,
-        });
-    };
-
-    const updateColor = (e: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
-        setCarForm({
-            ...carForm,
-            [e.target.name as string]: e.target.value,
-        });
-    };
+    const [carForm, updateCarForm, updateColor , resetCarForm] = useForm<CarFormData>(emptyCarForm);
 
     const addCar = () => {
         onAddCar({ 
@@ -60,7 +47,7 @@ export function CarForm({ buttonText, colors, onAddCar }: CarFormProps) {
             year: nanToZero(carForm.year),
             price: nanToZero(carForm.price),
          });
-        setCarForm(emptyCarForm);
+         resetCarForm();
     };
 
     return (
