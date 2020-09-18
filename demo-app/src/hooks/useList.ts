@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import { Item } from '../models/item';
 
-type AppendItem<S> = (item: S) => void;
+type AppendItem<S> = (itemForm: Omit<S, 'id'>) => void;
 type ReplaceItem<S> = (item: S) => void;
 type RemoveItem = (itemId: number) => void;
 
@@ -16,7 +16,7 @@ export const useList: UseList = <ItemType extends Item>(initialItems: ItemType[]
             items.concat({
                 ...itemForm,
                 id: Math.max(...items.map((item) => item.id), 0) + 1,
-            })
+            } as ItemType)
         );
     };
 

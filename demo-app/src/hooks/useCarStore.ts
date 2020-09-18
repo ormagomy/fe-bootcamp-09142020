@@ -41,7 +41,7 @@ export const useCarStore = (initialCars: Car[]) => {
     const [order, setOrder] = useState<OrderType>({ direction: 'asc', column: 'id' });
 
     const onAddCar = (carForm: CarFormData) => {
-        addCar(carForm as Car);
+        addCar(carForm);
         cancelEdit();
     };
 

@@ -6,7 +6,7 @@ import { ColorForm } from './ColorForm';
 
 export type ColorToolProps = {
     colors: Color[];
-    onAddColor: (color: Color) => void;
+    onAddColor: (color: Omit<Color, 'id'>) => void;
 };
 
 const useStyles = makeStyles({
@@ -28,7 +28,7 @@ export function ColorTool({ colors, onAddColor }: ColorToolProps) {
                     <ListItem key={color.id}>{color.name}</ListItem>
                 ))}
             </List>
-            <ColorForm buttonText="Add Color" onSubmitColor={(color) => onAddColor(color as Color)} />
+            <ColorForm buttonText="Add Color" onSubmitColor={(color) => onAddColor(color)} />
         </div>
     );
 }
