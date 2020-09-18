@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles, List, ListItem } from '@material-ui/core';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
-import { ColorForm, ColorFormData } from './ColorForm';
+import { ColorForm } from './ColorForm';
 
 export type ColorToolProps = {
     colors: Color[];
@@ -20,13 +20,6 @@ const useStyles = makeStyles({
 export function ColorTool({ colors, onAddColor }: ColorToolProps) {
     const classes = useStyles();
 
-    const addColor = (colorForm: ColorFormData) => {
-        onAddColor({
-            id: Math.max(...colors.map((c) => c.id), 0) + 1,
-            ...colorForm,
-        });
-    };
-
     return (
         <div className={classes.root}>
             <ToolHeader headerText="Color tool" />
@@ -35,7 +28,7 @@ export function ColorTool({ colors, onAddColor }: ColorToolProps) {
                     <ListItem key={color.id}>{color.name}</ListItem>
                 ))}
             </List>
-            <ColorForm buttonText="Add Color" onSubmitColor={addColor} />
+            <ColorForm buttonText="Add Color" onSubmitColor={(color) => onAddColor(color as Color)} />
         </div>
     );
 }

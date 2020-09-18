@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { CarTool } from './CarTool';
 import { Car } from '../models/Cars';
 import { ColorTool } from './ColorTool';
 import { Color } from '../models/Colors';
+import {useList} from '../hooks/useList';
 
 type CarToolHocProps = {
     cars: Car[];
@@ -11,11 +12,7 @@ type CarToolHocProps = {
 };
 
 export function CarToolHoc({ cars, colors: defaultColors }: CarToolHocProps) {
-    const [colors, setColors] = useState(defaultColors);
-
-    const addColor = (color: Color) => {
-        setColors(colors.concat(color));
-    };
+    const [colors, addColor] = useList(defaultColors);
 
     return (
         <>
