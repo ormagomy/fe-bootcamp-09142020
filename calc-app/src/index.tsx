@@ -7,75 +7,109 @@ const ADD_ACTION = 'ADD';
 const SUBTRACT_ACTION = 'SUBTRACT';
 const MULTIPLY_ACTION = 'MULTIPLY';
 const DIVIDE_ACTION = 'DIVIDE';
+const CLEAR_ACTION = 'CLEAR';
 
-export interface CalcOpAction extends Action {
+interface CalcOpAction extends Action {
     payload: { num: number };
 }
 
-export type CalcOpActionCreator = (num: number) => CalcOpAction;
+type CalcOpActionCreator = (num: number) => CalcOpAction;
 
-export const createAddAction: CalcOpActionCreator = num => ({
+const createAddAction: CalcOpActionCreator = num => ({
     type: ADD_ACTION,
     payload: { num },
 });
 
-export const createSubtractAction: CalcOpActionCreator = num => ({
+const createSubtractAction: CalcOpActionCreator = num => ({
     type: SUBTRACT_ACTION,
     payload: { num },
 });
 
-export const createMultiplyAction: CalcOpActionCreator = num => ({
+const createMultiplyAction: CalcOpActionCreator = num => ({
     type: MULTIPLY_ACTION,
     payload: { num },
 });
 
-export const createDivideAction: CalcOpActionCreator = num => ({
+const createDivideAction: CalcOpActionCreator = num => ({
     type: DIVIDE_ACTION,
     payload: { num },
 });
 
-export type CalcToolState = {
+type ClearActionCreator = () => Action;
+
+const createClearAction: ClearActionCreator = () => ({
+    type: CLEAR_ACTION,
+});
+
+type CalcToolHistory = {
+    operation: string;
+    value: number;
+};
+
+type CalcToolState = {
     result: number;
+    history: CalcToolHistory[];
 };
 
-export const calcToolReducer: Reducer<CalcToolState, CalcOpAction> = (state = { result: 0 }, action) => {
-    switch (action.type) {
-        case ADD_ACTION:
-            return {
-                ...state,
-                result: state.result + action.payload.num,
-            };
-        case SUBTRACT_ACTION:
-            return {
-                ...state,
-                result: state.result - action.payload.num,
-            };
-        case MULTIPLY_ACTION:
-            return {
-                ...state,
-                result: state.result * action.payload.num,
-            };
-        case DIVIDE_ACTION:
-            return {
-                ...state,
-                result: state.result / action.payload.num,
-            };
-        default:
-            return state;
+const defaultState = {
+    result: 0,
+    history: [],
+};
+
+function isCalcOpAction(action: Action<string>): action is CalcOpAction {
+    return action.type === ADD_ACTION || action.type === SUBTRACT_ACTION || action.type === MULTIPLY_ACTION || action.type === DIVIDE_ACTION;
+}
+
+const calcToolReducer: Reducer<CalcToolState, CalcOpAction | Action> = (state = defaultState, action) => {
+    if (isCalcOpAction(action)) {
+        switch (action.type) {
+            case ADD_ACTION:
+                return {
+                    ...state,
+                    result: state.result + action.payload.num,
+                    history: [...state.history, { operation: '+', value: action.payload.num }],
+                };
+            case SUBTRACT_ACTION:
+                return {
+                    ...state,
+                    result: state.result - action.payload.num,
+                    history: [...state.history, { operation: '-', value: action.payload.num }],
+                };
+            case MULTIPLY_ACTION:
+                return {
+                    ...state,
+                    result: state.result * action.payload.num,
+                    history: [...state.history, { operation: '*', value: action.payload.num }],
+                };
+            case DIVIDE_ACTION:
+                return {
+                    ...state,
+                    result: state.result / action.payload.num,
+                    history: [...state.history, { operation: '/', value: action.payload.num }],
+                };
+        }
+    } else if (action.type === CLEAR_ACTION) {
+        return {
+            ...defaultState,
+        };
     }
+    // fallthrough case
+    return state;
 };
 
-export const calcToolStore = createStore(calcToolReducer);
+const calcToolStore = createStore(calcToolReducer);
 
 type CalcToolProps = {
     result: number;
+    history: CalcToolHistory[];
     onAdd: (num: number) => void;
     onSubtract: (num: number) => void;
     onMultiply: (num: number) => void;
     onDivide: (num: number) => void;
+    onClear: () => void;
 };
 
-export function CalcTool({ result, onAdd, onSubtract, onMultiply, onDivide }: CalcToolProps) {
+function CalcTool({ result, history, onAdd, onSubtract, onMultiply, onDivide, onClear }: CalcToolProps) {
     const [numInput, setNumInput] = useState(0);
 
     return (
@@ -102,23 +136,38 @@ export function CalcTool({ result, onAdd, onSubtract, onMultiply, onDivide }: Ca
                     /
                 </button>
             </fieldset>
+            <ul>
+                {history.map(item => (
+                    <li>
+                        {item.operation} {item.value}
+                    </li>
+                ))}
+            </ul>
+            <button onClick={onClear}>Clear</button>
         </>
     );
 }
 
-export function CalcToolContainer() {
+function CalcToolContainer() {
     const result = useSelector<CalcToolState, number>(state => state.result);
+    const history = useSelector<CalcToolState, CalcToolHistory[]>(state => state.history);
+
+    /* This is creating dispatch bindings like this:
+     *   onAdd: (num) => dispatch(createAddAction(num))
+     *   onSubtract: (num) => dispatch(createSubtractAction(num))
+     */
     const boundActionsMap = bindActionCreators(
         {
             onAdd: createAddAction,
             onSubtract: createSubtractAction,
             onMultiply: createMultiplyAction,
             onDivide: createDivideAction,
+            onClear: createClearAction,
         },
         useDispatch()
     );
 
-    return <CalcTool result={result} {...boundActionsMap} />;
+    return <CalcTool result={result} history={history} {...boundActionsMap} />;
 }
 
 ReactDOM.render(
