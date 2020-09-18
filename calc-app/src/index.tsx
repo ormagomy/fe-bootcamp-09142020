@@ -5,6 +5,8 @@ import { useSelector, useDispatch, Provider } from 'react-redux';
 
 const ADD_ACTION = 'ADD';
 const SUBTRACT_ACTION = 'SUBTRACT';
+const MULTIPLY_ACTION = 'MULTIPLY';
+const DIVIDE_ACTION = 'DIVIDE';
 
 export interface CalcOpAction extends Action {
     payload: { num: number };
@@ -19,6 +21,16 @@ export const createAddAction: CalcOpActionCreator = num => ({
 
 export const createSubtractAction: CalcOpActionCreator = num => ({
     type: SUBTRACT_ACTION,
+    payload: { num },
+});
+
+export const createMultiplyAction: CalcOpActionCreator = num => ({
+    type: MULTIPLY_ACTION,
+    payload: { num },
+});
+
+export const createDivideAction: CalcOpActionCreator = num => ({
+    type: DIVIDE_ACTION,
     payload: { num },
 });
 
@@ -38,6 +50,16 @@ export const calcToolReducer: Reducer<CalcToolState, CalcOpAction> = (state = { 
                 ...state,
                 result: state.result - action.payload.num,
             };
+        case MULTIPLY_ACTION:
+            return {
+                ...state,
+                result: state.result * action.payload.num,
+            };
+        case DIVIDE_ACTION:
+            return {
+                ...state,
+                result: state.result / action.payload.num,
+            };
         default:
             return state;
     }
@@ -49,9 +71,11 @@ type CalcToolProps = {
     result: number;
     onAdd: (num: number) => void;
     onSubtract: (num: number) => void;
+    onMultiply: (num: number) => void;
+    onDivide: (num: number) => void;
 };
 
-export function CalcTool({ result, onAdd, onSubtract }: CalcToolProps) {
+export function CalcTool({ result, onAdd, onSubtract, onMultiply, onDivide }: CalcToolProps) {
     const [numInput, setNumInput] = useState(0);
 
     return (
@@ -71,6 +95,12 @@ export function CalcTool({ result, onAdd, onSubtract }: CalcToolProps) {
                 <button type="button" onClick={() => onSubtract(numInput)}>
                     -
                 </button>
+                <button type="button" onClick={() => onMultiply(numInput)}>
+                    *
+                </button>
+                <button type="button" onClick={() => onDivide(numInput)}>
+                    /
+                </button>
             </fieldset>
         </>
     );
@@ -82,6 +112,8 @@ export function CalcToolContainer() {
         {
             onAdd: createAddAction,
             onSubtract: createSubtractAction,
+            onMultiply: createMultiplyAction,
+            onDivide: createDivideAction,
         },
         useDispatch()
     );
