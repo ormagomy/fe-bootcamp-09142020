@@ -42,7 +42,7 @@ const createClearAction: ClearActionCreator = () => ({
 });
 
 type CalcToolHistory = {
-    operation: string;
+    operation: '+' | '-' | '*' | '/';
     value: number;
 };
 
