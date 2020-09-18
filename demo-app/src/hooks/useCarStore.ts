@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { Car, CarFormData } from '../models/Cars';
 import { useList } from './useList';
-
-export type OrderType = {
-    direction: orderType;
-    column: keyof Car;
-};
-
-type orderType = 'asc' | 'desc' | undefined;
+import { CarToolStore, orderType, OrderType } from '../models/CarTool';
 
 function descendingComparator(a: Car, b: Car, orderBy: keyof Car) {
     if (b[orderBy] < a[orderBy]) {
@@ -35,7 +29,9 @@ function stableSort(cars: Car[], comparator: (a: Car, b: Car) => number) {
     return stabilizedThis.map((el) => el.car);
 }
 
-export const useCarStore = (initialCars: Car[]) => {
+export type UseCarToolStore = (initialCars: Car[]) => CarToolStore;
+
+export const useCarStore: UseCarToolStore = (initialCars: Car[]) => {
     const [cars, addCar, replaceCar, deleteCar] = useList([...initialCars]);
     const [carToEdit, setCarToEdit] = useState<Car>();
     const [order, setOrder] = useState<OrderType>({ direction: 'asc', column: 'id' });
@@ -65,12 +61,12 @@ export const useCarStore = (initialCars: Car[]) => {
     return {
         cars: stableSort(cars, getComparator(order.direction, order.column)),
         carToEdit,
+        order,
         setCarToEdit,
         onAddCar,
         onDeleteCar,
         saveCarEdit,
         cancelEdit,
-        order,
         handleSort,
     };
 };

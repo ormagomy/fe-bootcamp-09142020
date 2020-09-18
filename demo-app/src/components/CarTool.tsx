@@ -1,15 +1,13 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
-import { Car } from '../models/Cars';
+import { useCarToolStoreContext } from '../contexts/carToolContext';
 import { CarForm } from './CarForm';
 import { CarTable } from './CarTable';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
-import { useCarStore } from '../hooks/useCarStore';
 
 export type CarToolProps = {
-    cars: Car[];
     colors: Color[];
 };
 
@@ -21,9 +19,9 @@ const useStyles = makeStyles({
     },
 });
 
-export function CarTool({ cars: defaultCars, colors }: CarToolProps) {
+export function CarTool({ colors }: CarToolProps) {
     const classes = useStyles();
-    const { cars, carToEdit, setCarToEdit, onAddCar, onDeleteCar, saveCarEdit, cancelEdit, order, handleSort } = useCarStore(defaultCars);
+    const { cars, carToEdit, setCarToEdit, onAddCar, onDeleteCar, saveCarEdit, cancelEdit, order, handleSort } = useCarToolStoreContext();
 
     return (
         <div className={classes.root}>

@@ -5,7 +5,7 @@ import { Car } from '../models/Cars';
 import { CarViewRow } from './CarViewRow';
 import { CarEditRow } from './CarEditRow';
 import { Color } from '../models/Colors';
-import { OrderType } from '../hooks/useCarStore';
+import { OrderType } from '../models/CarTool';
 
 const useStyles = makeStyles({
     table: {
