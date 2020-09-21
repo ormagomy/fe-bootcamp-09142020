@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Action, Reducer, createStore, bindActionCreators } from 'redux';
 import { useSelector, useDispatch, Provider } from 'react-redux';
+import { TextField, Button, makeStyles, IconButton, List, ListItem } from '@material-ui/core';
+import { Delete } from '@material-ui/icons';
 
 const ADD_ACTION = 'ADD';
 const SUBTRACT_ACTION = 'SUBTRACT';
@@ -14,7 +16,13 @@ interface CalcOpAction extends Action {
     payload: { num: number };
 }
 
+interface DeleteHistoryAction extends Action {
+    payload: { index: number };
+}
+
 type CalcOpActionCreator = (num: number) => CalcOpAction;
+type SimpleActionCreator = () => Action;
+type DeleteHistoryActionCreator = (index: number) => DeleteHistoryAction;
 
 const createAddAction: CalcOpActionCreator = num => ({
     type: ADD_ACTION,
@@ -36,17 +44,9 @@ const createDivideAction: CalcOpActionCreator = num => ({
     payload: { num },
 });
 
-type SimpleActionCreator = () => Action;
-
 const createClearAction: SimpleActionCreator = () => ({
     type: CLEAR_ACTION,
 });
-
-interface DeleteHistoryAction extends Action {
-    payload: { index: number };
-}
-
-type DeleteHistoryActionCreator = (index: number) => DeleteHistoryAction;
 
 const createDeleteAction: DeleteHistoryActionCreator = index => ({
     type: DELETE_HISTORY_ACTION,
@@ -76,7 +76,7 @@ function isDeleteHistoryAction(action: Action<string>): action is DeleteHistoryA
     return action.type === DELETE_HISTORY_ACTION;
 }
 
-const calcToolReducer: Reducer<CalcToolState, CalcOpAction | Action> = (state = defaultState, action) => {
+const calcToolReducer: Reducer<CalcToolState, CalcOpAction | DeleteHistoryAction | Action> = (state = defaultState, action) => {
     if (isCalcOpAction(action)) {
         if (action.payload.num < 0 || action.payload.num > 10) {
             return {
@@ -141,6 +141,22 @@ const mapOpActionToString = (actionType: string) => {
     }
 };
 
+const useStyles = makeStyles({
+    resultContainer: {
+        width: 240,
+        fontSize: 40,
+        textAlign: 'right',
+        margin: '0 0 10px 4px',
+    },
+    inputContainer: {
+        margin: '16px 4px',
+    },
+    actionButton: {
+        minWidth: 40,
+        margin: '0 4px',
+    },
+});
+
 type CalcToolProps = {
     result: number;
     history: CalcToolHistory[];
@@ -155,6 +171,7 @@ type CalcToolProps = {
 
 function CalcTool({ result, history, validationError, onAdd, onSubtract, onMultiply, onDivide, onClear, onDeleteHistory }: CalcToolProps) {
     const [numInput, setNumInput] = useState(0);
+    const classes = useStyles();
 
     const clear = () => {
         setNumInput(0);
@@ -163,39 +180,39 @@ function CalcTool({ result, history, validationError, onAdd, onSubtract, onMulti
 
     return (
         <>
-            <div>
-                Result: <span>{result}</span>
-            </div>
-            <div>
-                <label>
-                    Num Input: <input type="number" value={numInput} onChange={e => setNumInput(e.target.valueAsNumber)} />
-                </label>
+            <div className={classes.resultContainer}>{result}</div>
+            <div className={classes.inputContainer}>
+                <TextField type="number" label="Num Input" value={numInput} onChange={e => setNumInput(Number(e.target.value))} />
             </div>
             {validationError && <div>{validationError}</div>}
-            <fieldset>
-                <button type="button" onClick={() => onAdd(numInput)}>
+            <div>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onAdd(numInput)}>
                     +
-                </button>
-                <button type="button" onClick={() => onSubtract(numInput)}>
+                </Button>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onSubtract(numInput)}>
                     -
-                </button>
-                <button type="button" onClick={() => onMultiply(numInput)}>
+                </Button>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onMultiply(numInput)}>
                     *
-                </button>
-                <button type="button" onClick={() => onDivide(numInput)}>
+                </Button>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onDivide(numInput)}>
                     /
-                </button>
-                <button onClick={clear}>Clear</button>
-            </fieldset>
-            <ul>
+                </Button>
+                <Button className={classes.actionButton} variant="outlined" size="small" onClick={clear}>
+                    Clear
+                </Button>
+            </div>
+            <List dense>
                 {history.map((item, index) => (
-                    <li key={index}>
+                    <ListItem key={index} divider={index !== history.length - 1}>
                         {mapOpActionToString(item.operation)} {item.value}
                         &nbsp;&nbsp;&nbsp;
-                        <button onClick={() => onDeleteHistory(index)}>Delete</button>
-                    </li>
+                        <IconButton size="small" onClick={() => onDeleteHistory(index)}>
+                            <Delete />
+                        </IconButton>
+                    </ListItem>
                 ))}
-            </ul>
+            </List>
         </>
     );
 }
