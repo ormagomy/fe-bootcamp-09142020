@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Action, Reducer, createStore, bindActionCreators } from 'redux';
+import { Action, Reducer, createStore, bindActionCreators, combineReducers } from 'redux';
 import { useSelector, useDispatch, Provider } from 'react-redux';
 import { TextField, Button, makeStyles, IconButton, List, ListItem } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
@@ -11,18 +11,23 @@ const MULTIPLY_ACTION = 'MULTIPLY';
 const DIVIDE_ACTION = 'DIVIDE';
 const CLEAR_ACTION = 'CLEAR';
 const DELETE_HISTORY_ACTION = 'DELETE_HISTORY';
+const VALIDATION_ERROR_ACTION = 'VALIDATION_ERROR';
 
 interface CalcOpAction extends Action {
     payload: { num: number };
 }
-
+interface ClearAction extends Action {}
 interface DeleteHistoryAction extends Action {
     payload: { index: number };
 }
+interface ValidationErrorAction extends Action {
+    payload: { message: string };
+}
 
 type CalcOpActionCreator = (num: number) => CalcOpAction;
-type SimpleActionCreator = () => Action;
+type ClearActionCreator = () => ClearAction;
 type DeleteHistoryActionCreator = (index: number) => DeleteHistoryAction;
+type ValidationErrorActionCreator = (message: string) => ValidationErrorAction;
 
 const createAddAction: CalcOpActionCreator = num => ({
     type: ADD_ACTION,
@@ -44,13 +49,18 @@ const createDivideAction: CalcOpActionCreator = num => ({
     payload: { num },
 });
 
-const createClearAction: SimpleActionCreator = () => ({
+const createClearAction: ClearActionCreator = () => ({
     type: CLEAR_ACTION,
 });
 
 const createDeleteAction: DeleteHistoryActionCreator = index => ({
     type: DELETE_HISTORY_ACTION,
     payload: { index },
+});
+
+const createValidationErrorAction: ValidationErrorActionCreator = message => ({
+    type: VALIDATION_ERROR_ACTION,
+    payload: { message },
 });
 
 type CalcToolHistory = {
@@ -64,69 +74,75 @@ type CalcToolState = {
     validationError?: string;
 };
 
-const defaultState = {
-    result: 0,
-    history: [],
-};
-
+function isClearAction(action: Action<string>): action is ClearAction {
+    return action.type === CLEAR_ACTION;
+}
 function isCalcOpAction(action: Action<string>): action is CalcOpAction {
     return action.type === ADD_ACTION || action.type === SUBTRACT_ACTION || action.type === MULTIPLY_ACTION || action.type === DIVIDE_ACTION;
 }
 function isDeleteHistoryAction(action: Action<string>): action is DeleteHistoryAction {
     return action.type === DELETE_HISTORY_ACTION;
 }
+function isValidationErrorAction(action: Action<string>): action is ValidationErrorAction {
+    return action.type === VALIDATION_ERROR_ACTION;
+}
 
-const calcToolReducer: Reducer<CalcToolState, CalcOpAction | DeleteHistoryAction | Action> = (state = defaultState, action) => {
+type CalcActions = CalcOpAction | DeleteHistoryAction | ClearAction | ValidationErrorAction;
+
+const resultReducer: Reducer<number, CalcActions> = (result = 0, action) => {
     if (isCalcOpAction(action)) {
-        if (action.payload.num < 0 || action.payload.num > 10) {
-            return {
-                ...state,
-                validationError: 'Input number must be between 0 and 10',
-            };
-        }
-
-        const newState = {
-            ...state,
-            validationError: undefined,
-            history: [...state.history, { operation: action.type, value: action.payload.num }],
-        };
-
         switch (action.type) {
             case ADD_ACTION:
-                newState.result = state.result + action.payload.num;
-                return newState;
+                return result + action.payload.num;
             case SUBTRACT_ACTION:
-                newState.result = state.result - action.payload.num;
-                return newState;
+                return result - action.payload.num;
             case MULTIPLY_ACTION:
-                newState.result = state.result * action.payload.num;
-                return newState;
+                return result * action.payload.num;
             case DIVIDE_ACTION:
-                newState.result = state.result / action.payload.num;
-                return newState;
+                return result / action.payload.num;
         }
+    }
+
+    if (isClearAction(action)) {
+        return 0;
+    }
+
+    return result;
+};
+
+const historyReducer: Reducer<CalcToolHistory[], CalcActions> = (history = [], action) => {
+    if (isCalcOpAction(action)) {
+        return [...history, { operation: action.type, value: action.payload.num }];
     }
 
     if (isDeleteHistoryAction(action)) {
-        const updatedHistory = [...state.history];
+        const updatedHistory = [...history];
         updatedHistory.splice(action.payload.index, 1);
-        return {
-            ...state,
-            history: updatedHistory,
-        };
+        return updatedHistory;
     }
 
-    switch (action.type) {
-        case CLEAR_ACTION:
-            return {
-                ...defaultState,
-            };
-        default:
-            return state;
+    if (isClearAction(action)) {
+        return [];
     }
+
+    return history;
 };
 
-const calcToolStore = createStore(calcToolReducer);
+const validationErrorReducer: Reducer<string, CalcActions> = (validationError = '', action) => {
+    if (isValidationErrorAction(action)) {
+        return action.payload.message;
+    }
+
+    return validationError;
+};
+
+const calcToolStore = createStore(
+    combineReducers({
+        result: resultReducer,
+        history: historyReducer,
+        validationError: validationErrorReducer,
+    })
+);
 
 const mapOpActionToString = (actionType: string) => {
     switch (actionType) {
@@ -151,6 +167,9 @@ const useStyles = makeStyles({
     inputContainer: {
         margin: '16px 4px',
     },
+    buttonContainer: {
+        margin: '16px 0',
+    },
     actionButton: {
         minWidth: 40,
         margin: '0 4px',
@@ -167,9 +186,10 @@ type CalcToolProps = {
     onDivide: (num: number) => void;
     onClear: () => void;
     onDeleteHistory: (num: number) => void;
+    onValidationError: (message: string) => void;
 };
 
-function CalcTool({ result, history, validationError, onAdd, onSubtract, onMultiply, onDivide, onClear, onDeleteHistory }: CalcToolProps) {
+function CalcTool({ result, history, validationError, onAdd, onSubtract, onMultiply, onDivide, onClear, onDeleteHistory, onValidationError }: CalcToolProps) {
     const [numInput, setNumInput] = useState(0);
     const classes = useStyles();
 
@@ -178,24 +198,45 @@ function CalcTool({ result, history, validationError, onAdd, onSubtract, onMulti
         onClear();
     };
 
+    const doOperation = (op: (input: number) => void) => {
+        return () => {
+            if (numInput < 0 || numInput > 10) {
+                onValidationError('Input must be between 0 and 10');
+            } else {
+                onValidationError('');
+                op(numInput);
+            }
+        };
+    };
+
+    const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const newInput = e.target.valueAsNumber;
+        if (newInput < 0 || newInput > 10) {
+            onValidationError('Input must be between 0 and 10');
+        } else {
+            onValidationError('');
+        }
+        setNumInput(newInput);
+    };
+
     return (
         <>
             <div className={classes.resultContainer}>{result}</div>
             <div className={classes.inputContainer}>
-                <TextField type="number" label="Num Input" value={numInput} onChange={e => setNumInput(Number(e.target.value))} />
+                <TextField type="number" label="Num Input" value={numInput} onChange={inputChange} />
             </div>
             {validationError && <div>{validationError}</div>}
-            <div>
-                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onAdd(numInput)}>
+            <div className={classes.buttonContainer}>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={doOperation(onAdd)}>
                     +
                 </Button>
-                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onSubtract(numInput)}>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={doOperation(onSubtract)}>
                     -
                 </Button>
-                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onMultiply(numInput)}>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={doOperation(onMultiply)}>
                     *
                 </Button>
-                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={() => onDivide(numInput)}>
+                <Button className={classes.actionButton} variant="outlined" size="small" type="button" onClick={doOperation(onDivide)}>
                     /
                 </Button>
                 <Button className={classes.actionButton} variant="outlined" size="small" onClick={clear}>
@@ -236,6 +277,7 @@ function CalcToolContainer() {
             onDivide: createDivideAction,
             onClear: createClearAction,
             onDeleteHistory: createDeleteAction,
+            onValidationError: createValidationErrorAction,
         },
         useDispatch()
     );
