@@ -2,7 +2,7 @@ import React, { ChangeEvent, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Action, Reducer, createStore, bindActionCreators, combineReducers } from 'redux';
 import { useSelector, useDispatch, Provider } from 'react-redux';
-import { TextField, Button, makeStyles, IconButton, List, ListItem } from '@material-ui/core';
+import { TextField, Button, makeStyles, IconButton, List, ListItem, Table, TableBody, TableHead, TableRow, TableCell } from '@material-ui/core';
 import { Delete } from '@material-ui/icons';
 
 const ADD_ACTION = 'ADD';
@@ -69,7 +69,6 @@ type CalcToolHistory = {
 };
 
 type CalcToolState = {
-    result: number;
     history: CalcToolHistory[];
     validationError?: string;
 };
@@ -88,27 +87,6 @@ function isValidationErrorAction(action: Action<string>): action is ValidationEr
 }
 
 type CalcActions = CalcOpAction | DeleteHistoryAction | ClearAction | ValidationErrorAction;
-
-const resultReducer: Reducer<number, CalcActions> = (result = 0, action) => {
-    if (isCalcOpAction(action)) {
-        switch (action.type) {
-            case ADD_ACTION:
-                return result + action.payload.num;
-            case SUBTRACT_ACTION:
-                return result - action.payload.num;
-            case MULTIPLY_ACTION:
-                return result * action.payload.num;
-            case DIVIDE_ACTION:
-                return result / action.payload.num;
-        }
-    }
-
-    if (isClearAction(action)) {
-        return 0;
-    }
-
-    return result;
-};
 
 const historyReducer: Reducer<CalcToolHistory[], CalcActions> = (history = [], action) => {
     if (isCalcOpAction(action)) {
@@ -138,7 +116,6 @@ const validationErrorReducer: Reducer<string, CalcActions> = (validationError = 
 
 const calcToolStore = createStore(
     combineReducers({
-        result: resultReducer,
         history: historyReducer,
         validationError: validationErrorReducer,
     })
@@ -177,7 +154,7 @@ const useStyles = makeStyles({
 });
 
 type CalcToolProps = {
-    result: number;
+    result: CalcToolResults;
     history: CalcToolHistory[];
     validationError?: string;
     onAdd: (num: number) => void;
@@ -188,6 +165,15 @@ type CalcToolProps = {
     onDeleteHistory: (num: number) => void;
     onValidationError: (message: string) => void;
 };
+
+type Stats = {
+    add: number;
+    subtract: number;
+    multiply: number;
+    divide: number;
+};
+
+type CalcToolResults = { total: number; stats: Stats };
 
 function CalcTool({ result, history, validationError, onAdd, onSubtract, onMultiply, onDivide, onClear, onDeleteHistory, onValidationError }: CalcToolProps) {
     const [numInput, setNumInput] = useState(0);
@@ -221,7 +207,7 @@ function CalcTool({ result, history, validationError, onAdd, onSubtract, onMulti
 
     return (
         <>
-            <div className={classes.resultContainer}>{result}</div>
+            <div className={classes.resultContainer}>{result.total}</div>
             <div className={classes.inputContainer}>
                 <TextField type="number" label="Num Input" value={numInput} onChange={inputChange} />
             </div>
@@ -254,13 +240,68 @@ function CalcTool({ result, history, validationError, onAdd, onSubtract, onMulti
                     </ListItem>
                 ))}
             </List>
+            <Table size="small">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>ADD</TableCell>
+                        <TableCell>SUBTRACT</TableCell>
+                        <TableCell>MULTIPLY</TableCell>
+                        <TableCell>DIVIDE</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    <TableRow>
+                        <TableCell>{result.stats.add}</TableCell>
+                        <TableCell>{result.stats.subtract}</TableCell>
+                        <TableCell>{result.stats.multiply}</TableCell>
+                        <TableCell>{result.stats.divide}</TableCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
         </>
     );
 }
 
 function CalcToolContainer() {
     const stateMap = {
-        result: useSelector<CalcToolState, number>(state => state.result),
+        result: useSelector<CalcToolState, CalcToolResults>(state => {
+            const total = state.history.reduce((total: number, item: CalcToolHistory) => {
+                switch (item.operation) {
+                    case ADD_ACTION:
+                        return total + item.value;
+                    case SUBTRACT_ACTION:
+                        return total - item.value;
+                    case MULTIPLY_ACTION:
+                        return total * item.value;
+                    case DIVIDE_ACTION:
+                        return total / item.value;
+                }
+                return total;
+            }, 0);
+
+            const stats = state.history.reduce(
+                (stats: Stats, item: CalcToolHistory) => {
+                    switch (item.operation) {
+                        case ADD_ACTION:
+                            stats.add++;
+                            break;
+                        case SUBTRACT_ACTION:
+                            stats.subtract++;
+                            break;
+                        case MULTIPLY_ACTION:
+                            stats.multiply++;
+                            break;
+                        case DIVIDE_ACTION:
+                            stats.divide++;
+                            break;
+                    }
+                    return stats;
+                },
+                { add: 0, subtract: 0, multiply: 0, divide: 0 }
+            );
+
+            return { total, stats };
+        }),
         history: useSelector<CalcToolState, CalcToolHistory[]>(state => state.history),
         validationError: useSelector<CalcToolState, string | undefined>(state => state.validationError),
     };
