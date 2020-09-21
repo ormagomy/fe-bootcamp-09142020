@@ -1,22 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { CarToolHoc } from './components/CarToolHoc';
-import { Color } from './models/Colors';
+import { CarToolContainer } from './components/CarToolContainer';
 
-import { CarToolStoreProvider } from './contexts/carToolContext';
+import { combineReducers, createStore } from 'redux';
+import { carsReducer, carToEditReducer, orderReducer } from './reducers/carToolReducers';
+import { Provider } from 'react-redux';
+import { colorsReducer } from './reducers/colorToolReducer';
 
-const colorList: Color[] = [
-    { id: 1, name: 'red', hexcode: 'ff0000' },
-    { id: 2, name: 'green', hexcode: 'ff0000' },
-    { id: 3, name: 'blue', hexcode: 'ff0000' },
-    { id: 4, name: 'gray', hexcode: 'ff0000' },
-    { id: 5, name: 'metallic', hexcode: 'ff0000' },
-];
+const carToolStore = createStore(
+    combineReducers({
+        cars: carsReducer,
+        carToEdit: carToEditReducer,
+        order: orderReducer,
+        colors: colorsReducer,
+    })
+);
 
 ReactDOM.render(
-    <CarToolStoreProvider>
-        <CarToolHoc colors={colorList} />
-    </CarToolStoreProvider>,
+    <Provider store={carToolStore}>
+        <CarToolContainer />
+    </Provider>,
     document.querySelector('#root')
 );

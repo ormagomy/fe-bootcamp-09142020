@@ -1,14 +1,24 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
 
-import { useCarToolStoreContext } from '../contexts/carToolContext';
 import { CarForm } from './CarForm';
 import { CarTable } from './CarTable';
 import { ToolHeader } from './ToolHeader';
 import { Color } from '../models/Colors';
+import { Car } from '../models/Cars';
+import { OrderType } from '../models/CarTool';
 
 export type CarToolProps = {
     colors: Color[];
+    cars: Car[];
+    carToEdit?: Car;
+    order: OrderType;
+    onAddCar: (carForm: Omit<Car, 'id'>) => void;
+    onDeleteCar: (id: number) => void;
+    onEditCar: (car: Car) => void;
+    onSaveEdit: (car: Car) => void;
+    onCancelEdit: () => void;
+    onSort: (carKey: keyof Car) => void;
 };
 
 const useStyles = makeStyles({
@@ -19,14 +29,23 @@ const useStyles = makeStyles({
     },
 });
 
-export function CarTool({ colors }: CarToolProps) {
+export function CarTool({ colors, cars, carToEdit, onEditCar, onAddCar, onDeleteCar, onSaveEdit, onCancelEdit, order, onSort }: CarToolProps) {
     const classes = useStyles();
-    const { cars, carToEdit, setCarToEdit, onAddCar, onDeleteCar, saveCarEdit, cancelEdit, order, handleSort } = useCarToolStoreContext();
 
     return (
         <div className={classes.root}>
             <ToolHeader headerText="Car tool" />
-            <CarTable cars={cars} carToEdit={carToEdit} colors={colors} onEditCar={setCarToEdit} onSaveEdit={saveCarEdit} onCancelEdit={cancelEdit} onDeleteCar={onDeleteCar} order={order} onSort={handleSort} />
+            <CarTable
+                cars={cars}
+                carToEdit={carToEdit}
+                colors={colors}
+                onEditCar={onEditCar}
+                onSaveEdit={onSaveEdit}
+                onCancelEdit={onCancelEdit}
+                onDeleteCar={onDeleteCar}
+                order={order}
+                onSort={onSort}
+            />
             <CarForm buttonText="Add Car" colors={colors} onAddCar={onAddCar} />
         </div>
     );

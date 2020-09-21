@@ -17,11 +17,11 @@ export type CarTableProps = {
     cars: Car[];
     carToEdit?: Car;
     colors: Color[];
+    order: OrderType;
     onDeleteCar: (id: number) => void;
     onEditCar: (car: Car) => void;
     onSaveEdit: (car: Car) => void;
     onCancelEdit: () => void;
-    order: OrderType;
     onSort: (carKey: keyof Car) => void;
 };
 
