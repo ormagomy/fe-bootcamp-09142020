@@ -20,7 +20,10 @@
                 });
             };
 
-            myFetch('https://t4d-class-rest-api.herokuapp.com/cars').then(cars => console.log(cars));
+            // myFetch('https://t4d-class-rest-api.herokuapp.com/cars').then(cars => console.log(cars));
+            fetch('https://t4d-class-rest-api.herokuapp.com/cars')
+                .then(res => res.json())
+                .then(cars => console.log(cars));
         </script>
     </body>
 </html>
