@@ -7,16 +7,20 @@
 
     <body>
         <script>
-            const xhr = new XMLHttpRequest();
+            const myFetch = url => {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.addEventListener('readystatechange', () => {
+                        if (xhr.status === 200 && xhr.readyState === 4) {
+                            resolve(JSON.parse(xhr.responseText));
+                        }
+                    });
+                    xhr.open('GET', url);
+                    xhr.send();
+                });
+            };
 
-            xhr.addEventListener('readystatechange', () => {
-                if (xhr.status === 200 && xhr.readyState === 4) {
-                    console.log(JSON.parse(xhr.responseText));
-                }
-            });
-
-            xhr.open('GET', 'https://t4d-class-rest-api.herokuapp.com/cars');
-            xhr.send();
+            myFetch('https://t4d-class-rest-api.herokuapp.com/cars').then(cars => console.log(cars));
         </script>
     </body>
 </html>
