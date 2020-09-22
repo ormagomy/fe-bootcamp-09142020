@@ -4,13 +4,6 @@ import { Car } from '../models/Cars';
 export const REFRESH_CARS_REQUEST_ACTION = 'REFRESH_CARS_REQUEST_ACTION';
 export const REFRESH_CARS_DONE_ACTION = 'REFRESH_CARS_DONE_ACTION';
 
-export const EDIT_CAR_ACTION = 'EDIT_CAR_ACTION';
-export const SAVE_CAR_ACTION = 'SAVE_CAR_ACTION';
-export const CANCEL_EDIT_ACTION = 'CANCEL_EDIT_ACTION';
-export const ADD_CAR_ACTION = 'ADD_CAR_ACTION';
-export const DELETE_CAR_ACTION = 'DELETE_CAR_ACTION';
-export const SORT_ACTION = 'SORT_ACTION';
-
 export type RefreshCarsRequestAction = Action<string>;
 export interface RefreshCarsDoneAction extends Action<string> {
     payload: { cars: Car[] };
@@ -43,12 +36,19 @@ export const refreshCars = () => {
     };
 };
 
+export const EDIT_CAR_ACTION = 'EDIT_CAR_ACTION';
+export const SAVE_CAR_ACTION = 'SAVE_CAR_ACTION';
+export const CANCEL_EDIT_ACTION = 'CANCEL_EDIT_ACTION';
+export const ADD_CAR_ACTION = 'ADD_CAR_ACTION';
+export const DELETE_CAR_ACTION = 'DELETE_CAR_ACTION';
+export const SORT_ACTION = 'SORT_ACTION';
+
 export interface CancelEditAction extends Action {}
 export interface CarAction extends Action {
     payload: { car: Car };
 }
 export interface AddAction extends Action {
-    payload: { carForm: Omit<Car, 'id'> };
+    payload: { car: Car };
 }
 export interface DeleteAction extends Action {
     payload: { carId: number };
@@ -58,7 +58,7 @@ export interface SortAction extends Action {
 }
 
 type CarActionCreator = (car: Car) => CarAction;
-type AddActionCreator = (car: Omit<Car, 'id'>) => AddAction;
+type AddActionCreator = (car: Car) => AddAction;
 type CancelEditActionCreator = () => CancelEditAction;
 type DeleteActionCreator = (carId: number) => DeleteAction;
 type SortActionCreator = (carKey: keyof Car) => SortAction;
@@ -73,19 +73,51 @@ export const createSaveEditAction: CarActionCreator = car => ({
     payload: { car },
 });
 
+export const saveEditThunk = (car: Car) => {
+    return async (dispatch: Dispatch) => {
+        await fetch(`http://localhost:3060/cars/${car.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(car),
+        });
+        dispatch(createSaveEditAction(car));
+    };
+};
+
 export const createCancelEditAction: CancelEditActionCreator = () => ({
     type: CANCEL_EDIT_ACTION,
 });
 
-export const createAddAction: AddActionCreator = carForm => ({
+export const createAddAction: AddActionCreator = car => ({
     type: ADD_CAR_ACTION,
-    payload: { carForm },
+    payload: { car },
 });
+
+export const addCarThunk = (carForm: Omit<Car, 'id'>) => {
+    return async (dispatch: Dispatch) => {
+        const res = await fetch('http://localhost:3060/cars', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(carForm),
+        });
+        const car = await res.json();
+        dispatch(createAddAction(car));
+    };
+};
 
 export const createDeleteAction: DeleteActionCreator = carId => ({
     type: DELETE_CAR_ACTION,
     payload: { carId },
 });
+
+export const deleteCarThunk = (carId: number) => {
+    return async (dispatch: Dispatch) => {
+        await fetch(`http://localhost:3060/cars/${carId}`, {
+            method: 'DELETE',
+        });
+        dispatch(createDeleteAction(carId));
+    };
+};
 
 export const createSortAction: SortActionCreator = carKey => ({
     type: SORT_ACTION,

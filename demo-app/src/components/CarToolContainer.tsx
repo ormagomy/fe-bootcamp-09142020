@@ -9,7 +9,7 @@ import { CarToolState, OrderType } from '../models/CarTool';
 import { Car } from '../models/Cars';
 import { ColorToolState } from '../models/ColorToolState';
 import { createAddColorAction } from '../actions/colorToolActions';
-import { createAddAction, createCancelEditAction, createDeleteAction, createEditAction, createSaveEditAction, createSortAction, refreshCars } from '../actions/carToolActions';
+import { addCarThunk, createCancelEditAction, createEditAction, createSortAction, deleteCarThunk, refreshCars, saveEditThunk } from '../actions/carToolActions';
 
 function descendingComparator(a: Car, b: Car, orderBy: keyof Car) {
     if (b[orderBy] < a[orderBy]) {
@@ -48,10 +48,10 @@ export function CarToolContainer() {
     const boundActions = bindActionCreators(
         {
             onAddColor: createAddColorAction,
-            onAddCar: createAddAction,
-            onDeleteCar: createDeleteAction,
+            onAddCar: addCarThunk,
+            onDeleteCar: deleteCarThunk,
             onEditCar: createEditAction,
-            onSaveEdit: createSaveEditAction,
+            onSaveEdit: saveEditThunk,
             onCancelEdit: createCancelEditAction,
             onSort: createSortAction,
         },

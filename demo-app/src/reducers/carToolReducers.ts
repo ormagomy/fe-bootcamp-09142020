@@ -35,8 +35,7 @@ export const carsReducer: Reducer<Car[], CarAction | AddAction | DeleteAction | 
         return [
             ...cars,
             {
-                ...action.payload.carForm,
-                id: Math.max(...cars.map(car => car.id), 0) + 1,
+                ...action.payload.car,
             },
         ];
     }
