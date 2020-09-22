@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -9,7 +9,7 @@ import { CarToolState, OrderType } from '../models/CarTool';
 import { Car } from '../models/Cars';
 import { ColorToolState } from '../models/ColorToolState';
 import { createAddColorAction } from '../actions/colorToolActions';
-import { createAddAction, createCancelEditAction, createDeleteAction, createEditAction, createSaveEditAction, createSortAction } from '../actions/carToolActions';
+import { createAddAction, createCancelEditAction, createDeleteAction, createEditAction, createSaveEditAction, createSortAction, refreshCars } from '../actions/carToolActions';
 
 function descendingComparator(a: Car, b: Car, orderBy: keyof Car) {
     if (b[orderBy] < a[orderBy]) {
@@ -38,12 +38,14 @@ function stableSort(cars: Car[], comparator: (a: Car, b: Car) => number) {
 }
 
 export function CarToolContainer() {
+    const dispatch = useDispatch();
+
     const order = useSelector<CarToolState, OrderType>(state => state.order);
     const cars = useSelector<CarToolState, Car[]>(state => stableSort(state.cars, getComparator(order)));
     const carToEdit = useSelector<CarToolState, Car | undefined>(state => state.carToEdit);
     const colors = useSelector<ColorToolState, Color[]>(state => state.colors);
 
-    const boundActionsMap = bindActionCreators(
+    const boundActions = bindActionCreators(
         {
             onAddColor: createAddColorAction,
             onAddCar: createAddAction,
@@ -53,13 +55,17 @@ export function CarToolContainer() {
             onCancelEdit: createCancelEditAction,
             onSort: createSortAction,
         },
-        useDispatch()
+        dispatch
     );
+
+    useEffect(() => {
+        dispatch(refreshCars());
+    }, [dispatch]);
 
     return (
         <>
-            <ColorTool colors={colors} {...boundActionsMap} />
-            <CarTool colors={colors} cars={cars} carToEdit={carToEdit} order={order} {...boundActionsMap} />
+            <ColorTool colors={colors} {...boundActions} />
+            <CarTool colors={colors} cars={cars} carToEdit={carToEdit} order={order} {...boundActions} />
         </>
     );
 }

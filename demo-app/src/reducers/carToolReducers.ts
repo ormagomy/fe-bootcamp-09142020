@@ -13,16 +13,17 @@ import {
     isSortAction,
     SAVE_CAR_ACTION,
     SortAction,
+    isRefreshCarsDoneAction,
+    RefreshCarsRequestAction,
 } from '../actions/carToolActions';
 import { Car } from '../models/Cars';
 import { OrderType } from '../models/CarTool';
 
-const carList: Car[] = [
-    { id: 1, make: 'Toyota', model: 'Tacoma', year: 2017, color: 'gray', price: 19999 },
-    { id: 2, make: 'Tesla', model: 'Cyber Truck', year: 2022, color: 'metallic', price: 69999 },
-];
+export const carsReducer: Reducer<Car[], CarAction | AddAction | DeleteAction | RefreshCarsRequestAction> = (cars = [], action) => {
+    if (isRefreshCarsDoneAction(action)) {
+        return action.payload.cars;
+    }
 
-export const carsReducer: Reducer<Car[], CarAction | AddAction | DeleteAction> = (cars = carList, action) => {
     if (isCarAction(action) && action.type === SAVE_CAR_ACTION) {
         const index = cars.findIndex(item => action.payload.car.id === item.id);
         const carsUpdate = cars.concat(); // Clone the items array
