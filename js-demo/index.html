@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>JS Demo</title>
+    </head>
+
+    <body>
+        <script>
+            const xhr = new XMLHttpRequest();
+
+            xhr.addEventListener('readystatechange', () => {
+                if (xhr.status === 200 && xhr.readyState === 4) {
+                    console.log(JSON.parse(xhr.responseText));
+                }
+            });
+
+            xhr.open('GET', 'https://t4d-class-rest-api.herokuapp.com/cars');
+            xhr.send();
+        </script>
+    </body>
+</html>
