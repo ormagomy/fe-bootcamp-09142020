@@ -28,7 +28,7 @@
             const getCars = async () => {
                 const res = await fetch('https://t4d-class-rest-api.herokuapp.com/cars');
                 return res.json();
-            }
+            };
 
             getCars().then(console.log);
         </script>

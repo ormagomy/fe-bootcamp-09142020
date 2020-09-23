@@ -4,9 +4,12 @@ export const resolvers = {
   Query: {
     message: () => 'Hello World!',
     headerText: () => 'The Tools',
-    colors: () => {
-      return fetch('http://localhost:3040/colors')
-        .then(res => res.json());
-    }
+    colors: (_1, _2, { restURL }) => {
+      return fetch(`${restURL}/colors`).then(res => res.json());
+    },
+
+    cars: (_1, _2, { restURL }) => {
+      return fetch(`${restURL}/cars`).then(res => res.json());
+    },
   },
 };
