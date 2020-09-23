@@ -115,6 +115,7 @@ export const App = () => {
           ))}
         </tbody>
       </table>
+      <CarForm buttonText="Add Car" onSubmitCar={appendCar} />
     </>
   );
 };

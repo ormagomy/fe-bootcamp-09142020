@@ -53,8 +53,8 @@ export const resolvers = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(car),
       });
-      const appendedCar = await res.json();
-      const res2 = await fetch(`${restURL}/cars/${encodeURIComponent(appendedCar.id)}`);
+      const { id } = await res.json();
+      const res2 = await fetch(`${restURL}/cars/${encodeURIComponent(id)}`);
       return res2.json();
     },
 
@@ -64,16 +64,14 @@ export const resolvers = {
       return car;
     },
 
-    appendColor: async (_, args, { restURL }) => {
-      console.log(args);
-      const color = args.color;
+    appendColor: async (_, { color }, { restURL }) => {
       const res = await fetch(`${restURL}/colors`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(color),
       });
-      const appendedColor = await res.json();
-      const res2 = await fetch(`${restURL}/colors/${encodeURIComponent(appendedColor.id)}`);
+      const { id } = await res.json();
+      const res2 = await fetch(`${restURL}/colors/${encodeURIComponent(id)}`);
       return res2.json();
     },
 

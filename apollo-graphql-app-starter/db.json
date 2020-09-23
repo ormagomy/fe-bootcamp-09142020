@@ -31,14 +31,6 @@
       "price": 25000
     },
     {
-      "id": 2,
-      "make": "Tesla",
-      "model": "S",
-      "year": 2018,
-      "color": "red",
-      "price": 125000
-    },
-    {
       "make": "Tesla",
       "model": "Cyber Truck",
       "year": 2022,
@@ -61,6 +53,14 @@
       "color": "white",
       "price": 119999,
       "id": 9
+    },
+    {
+      "make": "tesla",
+      "model": "model s",
+      "year": 2020,
+      "color": "red",
+      "price": 79999,
+      "id": 10
     }
   ],
   "widgets": [
