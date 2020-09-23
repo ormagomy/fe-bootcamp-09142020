@@ -46,6 +46,17 @@ export const resolvers = {
       return fetch(`${restURL}/cars/${encodeURIComponent(carId)}`).then(res => res.json());
     },
   },
+  Mutation: {
+    appendCar: async (_, { car }, { restURL }) => {
+      const res = await fetch(`${restURL}/cars`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(car),
+      });
+      const appendedCar = await res.json();
+      const res2 = await fetch(`${restURL}/cars/${encodeURIComponent(appendedCar.id)}`);
+      return res2.json();
+    },
+  },
   HexCode: hexCodeType,
 };
-

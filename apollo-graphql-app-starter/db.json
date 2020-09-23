@@ -48,6 +48,22 @@
       "color": "c",
       "price": 0,
       "id": 5
+    },
+    {
+      "make": "Tesla",
+      "model": "Cyber Truck",
+      "year": 2022,
+      "color": "red",
+      "price": 49999,
+      "id": 6
+    },
+    {
+      "make": "Tesla",
+      "model": "Model X",
+      "year": 2019,
+      "color": "white",
+      "price": 119999,
+      "id": 7
     }
   ],
   "widgets": [
