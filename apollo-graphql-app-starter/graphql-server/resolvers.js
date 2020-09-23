@@ -1,4 +1,29 @@
 import fetch from 'node-fetch';
+import { GraphQLScalarType, Kind } from 'graphql';
+
+const hexCodePattern = RegExp(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
+const hexCodeType = new GraphQLScalarType({
+  name: 'HexCode',
+  description: 'A 6-digit hexidecimal value',
+  serialize(value) {
+    if (typeof value === 'string' && hexCodePattern.test(value)) {
+      return value;
+    }
+    throw new Error(`Invalid hexcode: ${value}`);
+  },
+  parseValue(value) {
+    if (typeof value === 'string' && hexCodePattern.test(value)) {
+      return value;
+    }
+    throw new Error(`Invalid hexcode: ${value}`);
+  },
+  parseLiteral(ast) {
+    switch (ast.kind) {
+      case Kind.String:
+        return 'string';
+    }
+  },
+});
 
 export const resolvers = {
   Query: {
@@ -21,4 +46,6 @@ export const resolvers = {
       return fetch(`${restURL}/cars/${encodeURIComponent(carId)}`).then(res => res.json());
     },
   },
+  HexCode: hexCodeType,
 };
+
