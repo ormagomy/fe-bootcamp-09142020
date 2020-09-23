@@ -20,10 +20,10 @@ export const createRefreshCarsDoneAction: CreateRefreshCarsDoneAction = cars => 
 });
 
 export function isRefreshCarsRequestAction(action: Action<string>): action is RefreshCarsRequestAction {
-    return [REFRESH_CARS_REQUEST_ACTION].includes(action.type);
+    return REFRESH_CARS_REQUEST_ACTION === action.type;
 }
 export function isRefreshCarsDoneAction(action: Action<string>): action is RefreshCarsDoneAction {
-    return [REFRESH_CARS_DONE_ACTION].includes(action.type);
+    return REFRESH_CARS_DONE_ACTION === action.type;
 }
 
 export const refreshCars = () => {
