@@ -1,29 +1,29 @@
 import fetch from 'node-fetch';
-import { GraphQLScalarType, Kind } from 'graphql';
+import { GraphQLScalarType } from 'graphql';
 
-const hexCodePattern = RegExp(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
-const hexCodeType = new GraphQLScalarType({
-  name: 'HexCode',
-  description: 'A 6-digit hexidecimal value',
-  serialize(value) {
-    if (typeof value === 'string' && hexCodePattern.test(value)) {
-      return value;
-    }
-    throw new Error(`Invalid hexcode: ${value}`);
-  },
-  parseValue(value) {
-    if (typeof value === 'string' && hexCodePattern.test(value)) {
-      return value;
-    }
-    throw new Error(`Invalid hexcode: ${value}`);
-  },
-  parseLiteral(ast) {
-    switch (ast.kind) {
-      case Kind.String:
-        return 'string';
-    }
-  },
-});
+// const hexCodePattern = RegExp(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
+// const hexCodeType = new GraphQLScalarType({
+//   name: 'HexCode',
+//   description: 'A 6-digit hexidecimal value',
+//   serialize(value) {
+//     if (typeof value === 'string' && hexCodePattern.test(value)) {
+//       return value;
+//     }
+//     throw new Error(`Invalid hexcode: ${value}`);
+//   },
+//   parseValue(value) {
+//     if (typeof value === 'string' && hexCodePattern.test(value)) {
+//       return value;
+//     }
+//     throw new Error(`Invalid hexcode: ${value}`);
+//   },
+//   parseLiteral(ast) {
+//     switch (ast.kind) {
+//       case 'StringValue':
+//         return ast.value;
+//     }
+//   },
+// });
 
 export const resolvers = {
   Query: {
@@ -57,6 +57,31 @@ export const resolvers = {
       const res2 = await fetch(`${restURL}/cars/${encodeURIComponent(appendedCar.id)}`);
       return res2.json();
     },
+
+    deleteCar: async (_, { carId }, { restURL }) => {
+      const car = await (await fetch(`${restURL}/cars/${encodeURIComponent(carId)}`)).json();
+      await fetch(`${restURL}/cars/${carId}`, { method: 'DELETE' });
+      return car;
+    },
+
+    appendColor: async (_, args, { restURL }) => {
+      console.log(args);
+      const color = args.color;
+      const res = await fetch(`${restURL}/colors`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(color),
+      });
+      const appendedColor = await res.json();
+      const res2 = await fetch(`${restURL}/colors/${encodeURIComponent(appendedColor.id)}`);
+      return res2.json();
+    },
+
+    deleteColor: async (_, { colorId }, { restURL }) => {
+      const color = await (await fetch(`${restURL}/colors/${encodeURIComponent(colorId)}`)).json();
+      await fetch(`${restURL}/colors/${colorId}`, { method: 'DELETE' });
+      return color;
+    },
   },
-  HexCode: hexCodeType,
+  // HexCode: hexCodeType,
 };

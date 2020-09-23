@@ -14,6 +14,11 @@
       "id": 3,
       "name": "blue",
       "hexcode": "#0000ff"
+    },
+    {
+      "name": "purple",
+      "hexcode": "#121212",
+      "id": 8
     }
   ],
   "cars": [
@@ -34,22 +39,6 @@
       "price": 125000
     },
     {
-      "make": "b",
-      "model": "b",
-      "year": 1900,
-      "color": "b",
-      "price": 0,
-      "id": 4
-    },
-    {
-      "make": "c",
-      "model": "c",
-      "year": 1900,
-      "color": "c",
-      "price": 0,
-      "id": 5
-    },
-    {
       "make": "Tesla",
       "model": "Cyber Truck",
       "year": 2022,
@@ -64,6 +53,14 @@
       "color": "white",
       "price": 119999,
       "id": 7
+    },
+    {
+      "make": "Tesla",
+      "model": "Model X",
+      "year": 2019,
+      "color": "white",
+      "price": 119999,
+      "id": 9
     }
   ],
   "widgets": [

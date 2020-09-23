@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { useQuery } from 'react-apollo';
+import { useQuery, useMutation } from 'react-apollo';
 import gql from 'graphql-tag';
-import { Car } from './models/car';
+import { Car, NewCar } from './models/car';
+import { CarForm } from './components/CarForm';
 
 const APP_QUERY = gql`
   query AppQuery {
@@ -21,6 +22,27 @@ const APP_QUERY = gql`
   }
 `;
 
+const APPEND_CAR_MUTATION = gql`
+  mutation AppendCar($car: AppendCar) {
+    appendCar(car: $car) {
+      id
+      make
+      model
+      year
+      color
+      price
+    }
+  }
+`;
+
+const DELETE_CAR_MUTATION = gql`
+  mutation DeleteCar($carId: ID) {
+    deleteCar(carId: $carId) {
+      id
+    }
+  }
+`;
+
 type Color = { id: number; name: string };
 
 export type AppQueryData = {
@@ -31,6 +53,23 @@ export type AppQueryData = {
 
 export const App = () => {
   const { loading, data, error } = useQuery<AppQueryData>(APP_QUERY);
+
+  const [mutateAppendedCar] = useMutation(APPEND_CAR_MUTATION);
+  const [deleteCarMutation] = useMutation(DELETE_CAR_MUTATION);
+
+  const appendCar = (car: NewCar) => {
+    mutateAppendedCar({
+      variables: { car },
+      refetchQueries: [{ query: APP_QUERY }],
+    });
+  };
+
+  const deleteCar = (carId: number) => {
+    deleteCarMutation({
+      variables: { carId },
+      refetchQueries: [{ query: APP_QUERY }],
+    });
+  };
 
   if (loading) {
     return <div>Loading!</div>;
@@ -62,13 +101,16 @@ export const App = () => {
         </thead>
         <tbody>
           {data?.cars.map(car => (
-            <tr>
+            <tr key={car.id}>
               <td>{car.id}</td>
               <td>{car.make}</td>
               <td>{car.model}</td>
               <td>{car.year}</td>
               <td>{car.color}</td>
               <td>{car.price}</td>
+              <td>
+                <button onClick={() => deleteCar(car.id)}>X</button>
+              </td>
             </tr>
           ))}
         </tbody>

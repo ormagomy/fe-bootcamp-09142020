@@ -1,5 +1,5 @@
+// scalar HexCode
 export const typeDefs = `
-  scalar HexCode
 
   type Query {
     message: String
@@ -12,6 +12,14 @@ export const typeDefs = `
 
   type Mutation {
     appendCar(car: AppendCar): Car
+    deleteCar(carId: ID): Car
+    appendColor(color: AppendColor): Color
+    deleteColor(colorId: ID): Color
+  }
+
+  input AppendColor {
+    name: String
+    hexcode: String
   }
 
   input AppendCar {
@@ -25,7 +33,7 @@ export const typeDefs = `
   type Color {
     id: ID
     name: String
-    hexcode: HexCode
+    hexcode: String
   }
 
   type Car {
