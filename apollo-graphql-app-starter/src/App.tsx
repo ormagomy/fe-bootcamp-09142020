@@ -60,7 +60,19 @@ export const App = () => {
   const appendCar = (car: NewCar) => {
     mutateAppendedCar({
       variables: { car },
-      refetchQueries: [{ query: APP_QUERY }],
+      // refetchQueries: [{ query: APP_QUERY }],
+      optimisticResponse: {
+        appendCar: {
+          ...car,
+          id: -1,
+          __typename: 'Car',
+        },
+      },
+      update: (store, mutationResult) => {
+        const data = store.readQuery<{ cars: Car[] }>({ query: APP_QUERY });
+        data!.cars = data!.cars.concat(mutationResult?.data?.appendCar);
+        store.writeQuery({ query: APP_QUERY, data });
+      },
     });
   };
 

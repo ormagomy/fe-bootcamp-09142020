@@ -61,6 +61,14 @@
       "color": "red",
       "price": 79999,
       "id": 10
+    },
+    {
+      "make": "Ford",
+      "model": "Escort",
+      "year": 1989,
+      "color": "Black",
+      "price": 7000,
+      "id": 11
     }
   ],
   "widgets": [
