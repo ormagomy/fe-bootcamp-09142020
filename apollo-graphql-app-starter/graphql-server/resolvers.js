@@ -1,29 +1,29 @@
 import fetch from 'node-fetch';
 import { GraphQLScalarType } from 'graphql';
 
-// const hexCodePattern = RegExp(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
-// const hexCodeType = new GraphQLScalarType({
-//   name: 'HexCode',
-//   description: 'A 6-digit hexidecimal value',
-//   serialize(value) {
-//     if (typeof value === 'string' && hexCodePattern.test(value)) {
-//       return value;
-//     }
-//     throw new Error(`Invalid hexcode: ${value}`);
-//   },
-//   parseValue(value) {
-//     if (typeof value === 'string' && hexCodePattern.test(value)) {
-//       return value;
-//     }
-//     throw new Error(`Invalid hexcode: ${value}`);
-//   },
-//   parseLiteral(ast) {
-//     switch (ast.kind) {
-//       case 'StringValue':
-//         return ast.value;
-//     }
-//   },
-// });
+const hexCodePattern = RegExp(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
+const hexCodeType = new GraphQLScalarType({
+  name: 'HexCode',
+  description: 'A 6-digit hexidecimal value',
+  serialize(value) {
+    if (typeof value === 'string' && hexCodePattern.test(value)) {
+      return value;
+    }
+    throw new Error(`Invalid hexcode: ${value}`);
+  },
+  parseValue(value) {
+    if (typeof value === 'string' && hexCodePattern.test(value)) {
+      return value;
+    }
+    throw new Error(`Invalid hexcode: ${value}`);
+  },
+  parseLiteral(ast) {
+    switch (ast.kind) {
+      case 'StringValue':
+        return ast.value;
+    }
+  },
+});
 
 export const resolvers = {
   Query: {
@@ -81,5 +81,5 @@ export const resolvers = {
       return color;
     },
   },
-  // HexCode: hexCodeType,
+  HexCode: hexCodeType,
 };

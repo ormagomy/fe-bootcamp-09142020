@@ -1,5 +1,5 @@
-// scalar HexCode
 export const typeDefs = `
+  scalar HexCode
 
   type Query {
     message: String
@@ -19,7 +19,7 @@ export const typeDefs = `
 
   input AppendColor {
     name: String
-    hexcode: String
+    hexcode: HexCode
   }
 
   input AppendCar {
@@ -33,7 +33,7 @@ export const typeDefs = `
   type Color {
     id: ID
     name: String
-    hexcode: String
+    hexcode: HexCode
   }
 
   type Car {
