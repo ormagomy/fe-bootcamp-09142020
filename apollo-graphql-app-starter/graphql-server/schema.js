@@ -4,6 +4,8 @@ export const typeDefs = `
     headerText: String
     colors: [Color]
     cars: [Car]
+    color(colorId: ID): Color
+    car(carId: ID): Car
   }
 
   type Color {
